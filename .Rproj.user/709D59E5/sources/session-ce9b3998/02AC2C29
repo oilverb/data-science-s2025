@@ -1,0 +1,32 @@
+{
+    "id": "02AC2C29",
+    "path": "C:/Users/obuchwald/Documents/data-science-s2025/data-science-curriculum-build/exercises_sequenced/d01-e-setup01-packages-assignment.Rmd",
+    "project_path": "data-science-curriculum-build/exercises_sequenced/d01-e-setup01-packages-assignment.Rmd",
+    "type": "r_markdown",
+    "hash": "4126481951",
+    "contents": "",
+    "dirty": false,
+    "created": 1737594203903.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "rmdVisualMode": "true",
+        "rmdVisualCollapsedChunks": "",
+        "rmdVisualModeLocation": "965:225.9838409423828",
+        "rmdVisualWrapConfigured": "true",
+        "docOutlineVisible": "1",
+        "cursorPosition": "38,18",
+        "scrollLine": "0",
+        "last_setup_crc32": "ce9b3998b049b5"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1737595253,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1737595253082,
+    "read_only": false,
+    "read_only_alternatives": []
+}
