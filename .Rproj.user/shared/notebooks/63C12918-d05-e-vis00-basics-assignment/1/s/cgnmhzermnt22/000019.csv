@@ -1,0 +1,8 @@
+"0","## TODO: Complete this code"
+"0","ggplot(diamonds) +                "
+"0","  geom_point(      "
+"0","    mapping = aes( "
+"0","      x = carat,   "
+"0","      y = price    "
+"0","    )"
+"0","  )"

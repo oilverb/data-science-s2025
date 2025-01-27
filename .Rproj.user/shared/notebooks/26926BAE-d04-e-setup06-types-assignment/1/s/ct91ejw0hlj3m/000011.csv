@@ -1,0 +1,8 @@
+"0","## TASK: Describe what went wrong here"
+"0","## Set our airport"
+"0","airport <- ""BOS"""
+"0",""
+"0","## Check our airport value"
+"0","airport == ATL"
+"2","Error: object 'ATL' not found
+"

@@ -59,8 +59,6 @@ In this first stage, you will explore the `diamonds` dataset and document your o
 ```{r q1-task}
 ## TASK: Plot `price` vs `carat` below
 ## Your code here!
-
-
 ```
 
 **Observations**:

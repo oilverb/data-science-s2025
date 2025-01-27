@@ -1,0 +1,4 @@
+"0","## No need to edit; uncomment and run"
+"0","""a"" + 1"
+"2","Error in ""a"" + 1 : non-numeric argument to binary operator
+"
