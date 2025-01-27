@@ -1,0 +1,7 @@
+"0","## TODO: Re-write the code above following the tidyverse style guide"
+"0","iris |>"
+"0","  group_by(Species) |>"
+"0","  summarize(Sepal.Length = mean(Sepal.Length), "
+"0","            Sepal.Width = mean(Sepal.Width), "
+"0","            Petal.Length = mean(Petal.Length), "
+"0","            Petal.Width = mean(Petal.Width))"

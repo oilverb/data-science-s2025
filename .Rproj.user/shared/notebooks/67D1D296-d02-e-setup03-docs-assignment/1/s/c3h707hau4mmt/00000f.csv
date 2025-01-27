@@ -1,5 +1,0 @@
-"0","## TODO: Re-write the code above following the tidyverse style guide"
-"0","vignette(package = ""dplyr"")"
-"0","vignette(dplyr)"
-"2","Error: object 'dplyr' not found
-"

@@ -1,0 +1,8 @@
+"0","## NOTE: You can copy this code to the chunk below"
+"0","iris %>%"
+"0","  mutate(Sepal.Area=Sepal.Length*Sepal.Width) %>%"
+"0","  group_by( Species ) %>%"
+"0","  summarize_if(is.numeric,mean)%>%"
+"0","  ungroup() %>%"
+"0","  pivot_longer( names_to=""measure"",values_to=""value"",cols=-Species ) %>%"
+"0","  arrange(value )"

@@ -1,0 +1,2 @@
+"0","## Original code; hard to read"
+"0","summarize(group_by(diamonds, cut), mean_price = mean(price))"

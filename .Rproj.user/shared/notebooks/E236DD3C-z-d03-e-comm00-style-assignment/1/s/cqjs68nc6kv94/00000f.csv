@@ -1,0 +1,3 @@
+"0","iris %>%"
+"0","  group_by(Species) %>%"
+"0","  summarize(Sepal.Length = mean(Sepal.Length), Sepal.Width = mean(Sepal.Width), Petal.Length = mean(Petal.Length), Petal.Width = mean(Petal.Width))"

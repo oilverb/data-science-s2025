@@ -1,3 +1,0 @@
-"0","diamonds %>%"
-"0","  group_by(cut) %>%"
-"0","  summarize(carat_mean = mean(carat))"
