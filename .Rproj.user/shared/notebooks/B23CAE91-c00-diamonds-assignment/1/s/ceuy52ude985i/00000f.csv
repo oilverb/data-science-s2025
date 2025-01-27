@@ -1,0 +1,4 @@
+"0","## TASK: Plot `price` vs `carat` below"
+"0","ggplot(diamonds) +                "
+"0","  geom_point(mapping = aes(x = carat, y = price))   "
+"0",""
