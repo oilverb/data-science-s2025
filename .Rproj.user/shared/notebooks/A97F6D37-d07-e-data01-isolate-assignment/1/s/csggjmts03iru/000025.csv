@@ -1,0 +1,8 @@
+"0","## TASK:"
+"0","df_q3 <- "
+"0","  flights %>% "
+"0","  select(arr_delay, arr_time, sched_arr_time, everything()) %>%"
+"0","  filter(between(arr_time - sched_arr_time, 0.1, 9.9) ) "
+"0","  "
+"0",""
+"0","df_q3"

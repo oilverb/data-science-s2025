@@ -1,0 +1,3 @@
+"0","## NOTE: Uncomment and run to see the error"
+"0","flights %>% "
+"0"," filter(month == 2)"
