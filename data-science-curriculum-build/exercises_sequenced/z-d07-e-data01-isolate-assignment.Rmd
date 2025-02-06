@@ -60,7 +60,7 @@ flights %>%
 Select all the variables whose name ends with `_time`.
 
 ```{r q1-task}
-## df_q1 <- TODO: Your code goes here!
+df_q1 <-
 flights %>% 
   select(ends_with("_time"))
 ```
@@ -204,7 +204,7 @@ This code doesn't quite what the user intended. What went wrong?
 
 ```{r q5-task}
 BOS <- "LGA"
-flights %>% filter(dest == BOS)
+flights %>% filter(dest == "BOS")
 ```
 
 It will take practice to get used to when and when not to use quotations. Don't worry---we'll get lots of practice!
@@ -292,7 +292,10 @@ Sort the flights in *descending* order by their `air_time`. Bring `air_time, des
 
 ```{r q7-task}
 ## df_q7 <- TODO: Your code here!
-df_q7
+df_q7 <- 
+  flights %>%
+  arrange(desc(air_time)) %>% 
+  select(air_time, dest, everything())
 ```
 
 Use the following to check your work
