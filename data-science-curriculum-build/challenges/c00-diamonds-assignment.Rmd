@@ -28,7 +28,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|-------------------|-----------------------------|-------------------------|
+|-------------------|----------------------------|-------------------------|
 | Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
@@ -58,22 +58,25 @@ In this first stage, you will explore the `diamonds` dataset and document your o
 
 ```{r q1-task}
 ## TASK: Plot `price` vs `carat` below
-ggplot(diamonds) +                
-  geom_point(mapping = aes(x = carat, y = price))   
+diamonds %>%
+  ggplot(aes(x = carat, y = price)) +
+  geom_point()   
 
 ```
 
 **Observations**:
 
--   Generally speaking, higher carat corresponds to higher price. However, this isn't a direct 1-1 correlation. There are plenty of low-ish carat diamonds with disproportionately high price. Price is likely impacted by other variables.
+-   Generally speaking, higher carat corresponds to higher price. However, this isn't a direct 1-1 relationship. There are plenty of low-ish carat diamonds with disproportionately high price. Price is likely impacted by other variables.
 -   There are notably modes concentrated at even numbers for carat. Its likely more common that diamonds are cut to exactly 1.0, 1.5, 2.0 carats (and so forth), rather than an intermediate value.
 
 ### **q2** Create a visualization showing variables `carat`, `price`, and `cut` simultaneously. Experiment with which variable you assign to which aesthetic (`x`, `y`, etc.) to find an effective visual.
 
 ```{r q2-task}
 ## TASK: Plot `price`, `carat`, and `cut` below
-ggplot(diamonds) +
-geom_point(aes(x = carat, y = price, color = cut))
+diamonds %>%
+  ggplot(aes(x = carat, y = price, color = cut)) +
+  geom_point()   
+
 
 ```
 
