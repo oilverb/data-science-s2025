@@ -160,7 +160,7 @@ survived_q3 <-
 
 survived_q3 %>% 
   ggplot(aes(Class, n, fill = Sex)) +
-  geom_col()
+  geom_col(position = "dodge")
 ```
 
 ![](c01-titanic-assignment_files/figure-gfm/q3-task-1.png)<!-- -->
@@ -225,7 +225,7 @@ df_prop
 df_prop %>% 
   filter(Survived == 'Yes') %>%
   ggplot(aes(Class, Prop, fill = Sex)) +
-  geom_col()
+  geom_col(position = "dodge")
 ```
 
     ## Warning: Removed 2 rows containing missing values or values outside the scale range
@@ -243,17 +243,10 @@ df_prop %>%
     higher proportion of survivors, but I’m not sure if I trust the data
     to be displaying that accurately.
 - Is there anything *fishy* going on in your plot?
-  - What is the y axis here? I typically expect a proportion to show a
-    fraction of a total, so no group should have a segment in the column
-    that is greater than 1.
-  - Looking through the raw data from the provided filter step, it seems
-    that we are calculating proportion of adult and child survivors of
-    each demographic, then adding them together, which results in a
-    maximum proportion of 2 for each category. This is super misleading,
-    as there are significantly fewer children than adults in the data
-    set, and the proportion of child survivors is generally much higher
-    than adults. This gives a super disproportionate weighting in the
-    bar graph format. I take it back, this isn’t the data I wanted.
+  - Its really suspicious that all of the proportions of survivors are
+    1.0 for 1st and 2nd class. That’s definitely not accurate to what
+    actually happened on the Titanic.
+  - This is possibly due to not accounting for children separately.
 
 ### **q5** Create a plot showing the group-proportion of occupants who *did* survive, along with aesthetics for `Class`, `Sex`, *and* `Age`. Document your observations below.
 
@@ -263,9 +256,9 @@ additional variables!
 ``` r
 df_prop %>% 
   filter(Survived == 'Yes') %>% 
-  ggplot(aes(Class, Prop, fill = Age)) +
-  geom_col() +
-  facet_grid(rows = 'Sex')
+  ggplot(aes(Class, Prop, fill = Sex)) +
+  geom_col(position = "dodge") +
+  facet_grid(rows = 'Age')
 ```
 
     ## Warning: Removed 2 rows containing missing values or values outside the scale range
@@ -289,9 +282,11 @@ df_prop %>%
   highest proportion of male survivors, followed by 3rd followed by 2nd.
 - If you saw something *fishy* in q4 above, use your new plot to explain
   the fishy-ness.
-  - The proportions are all normalized out of 1, now. This plot
-    distinguishes between adults and children. At least at the current
-    level of detail, it no longer seems fishy to me.
+  - Separating out adults and children, the beavior from q4 makes more
+    sense. The survival percentage for upper-class children was very
+    high, but lower for adults, particularly adult men. It appears that
+    the q4 plot only showed the proportion of surviving children, among
+    all classes but crew, which is a super misleading sample.
 
 # Notes
 
