@@ -49,17 +49,11 @@ cases <- tribble(
 cases
 ```
 
--   
+-   1) Country, 2011, 2012, and 2013
 
-    1)  Country, 2011, 2012, and 2013
+-   2) Country, year, and some unknown quantity (n, count, etc.)
 
--   
-
-    2)  Country, year, and some unknown quantity (n, count, etc.)
-
--   
-
-    3)  FR, DE, and US
+-   3) FR, DE, and US
 
 ```{r q1-test}
 ## TODO: Modify with your multiple choice number answer
@@ -89,15 +83,11 @@ alloys <- tribble(
 alloys
 ```
 
--   
+-   1) thick, E_00, mu_00, E_45, mu_45, rep
 
-    1)  thick, E_00, mu_00, E_45, mu_45, rep
+-   2) thick, E, mu, rep
 
--   2)thick, E, mu, rep
-
--   
-
-    3)  thick, E, mu, rep, angle
+-   3) thick, E, mu, rep, angle
 
 ```{r q2-test}
 ## TODO: Modify with your multiple choice number answer
@@ -303,7 +293,11 @@ Undo the modification using a single pivot. Don't worry about column order.
 ```{r q3-task}
 df_q3_res <-
   df_q3 %>%
-## NOTE: Add your pivot here!
+  pivot_wider(
+    names_from = id,
+    names_prefix = "X-",
+    values_from = value
+  )
 
 df_q3_res
 all.equal(
@@ -334,7 +328,12 @@ Undo the modification using a single pivot. Don't worry about column order.
 ```{r q4-task}
 df_q4_res <-
   df_q4 %>%
-## NOTE: Add your pivot here!
+  pivot_longer(
+    names_to = "key",
+    values_to = "X-0",
+    values_drop_na = TRUE,
+    cols = c(A, B, C)
+  )
 
 df_q4_res
 all.equal(
@@ -365,7 +364,11 @@ Undo the modification using a single pivot. Don't worry about column order.
 ```{r q5-task}
 df_q5_res <-
   df_q5 %>%
-## NOTE: Add your pivot here!
+  pivot_longer(
+    names_to = c(".value", "key"),
+    names_sep = "_",
+    cols = everything()
+  )
 
 df_q5_res
 all.equal(
