@@ -1,7 +1,7 @@
 ---
 title: "Aluminum Data"
-author: "(Your name here)"
-date: 2020-
+author: "Oliver Buchwald"
+date: 2025-02-20
 output:
   github_document:
     toc: true
@@ -26,7 +26,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
@@ -42,6 +42,7 @@ Make sure to commit both the challenge report (`report.md` file) and supporting 
 
 ```{r setup}
 library(tidyverse)
+library(ggforce)
 ```
 
 *Background*: In 1946, scientists at the Bureau of Standards tested a number of Aluminum plates to determine their [elasticity](https://en.wikipedia.org/wiki/Elastic_modulus) and [Poisson's ratio](https://en.wikipedia.org/wiki/Poisson%27s_ratio). These are key quantities used in the design of structural members, such as aircraft skin under [buckling loads](https://en.wikipedia.org/wiki/Buckling). These scientists tested plats of various thicknesses, and at different angles with respect to the [rolling](https://en.wikipedia.org/wiki/Rolling_(metalworking)) direction.
@@ -70,8 +71,17 @@ Note that these data are not tidy! The data in this form are convenient for repo
 
 ```{r q1-task}
 ## TASK: Tidy `df_stang`
-df_stang_long <-
-  df_stang
+
+df_stang_long <- 
+  df_stang %>%
+  pivot_longer(
+    names_to = c(".value", "angle"),
+    names_sep = "_",
+    cols = c(-thick, -alloy)
+  ) %>% 
+  filter(E > 0) %>% 
+  transform(angle = as.integer(angle))
+
 
 df_stang_long
 ```
@@ -108,20 +118,32 @@ print("Very good!")
 ### **q2** Perform a basic EDA on the aluminum data *without visualization*. Use your analysis to answer the questions under *observations* below. In addition, add your own *specific* question that you'd like to answer about the data---you'll answer it below in q3.
 
 ```{r q2-task}
-##
+colnames(df_stang_long)
+
+## count number of unique alloys
+df_stang_long %>%
+  count(alloy)
+
+## count number of samples of each angle
+df_stang_long %>%
+  count(angle)
+
+## list and count number of samples of each thickness
+df_stang_long %>%
+  count(thick)
 ```
 
 **Observations**:
 
 -   Is there "one true value" for the material properties of Aluminum?
-    -   (Your response here)
+    -   Broadly speaking, no - E and mu both have a bit of variation from sample to sample. Properties can very based on material imperfections, varying test setups, and more, so it follows that the data would have some variation from sample to sample.
 -   How many aluminum alloys are in this dataset? How do you know?
-    -   (Your response here)
+    -   Only one - All the samples in the data set are listed as al_24st alloy
 -   What angles were tested?
-    -   (Your response here)
+    -   0 degrees, 45 degrees, and 90 degrees
 -   What thicknesses were tested?
-    -   (Your response here)
--   (Write your own question here)
+    -   The thicknesses tested were 0.022, 0.032, 0.064 and 0.081. Presumably, these measurements are in inches and correspond to 23, 20,14, and 12 gauge sheet metal, respectively. 0.022 is an odd thickness to have (who uses 23 gauge sheet metal?), so I'm quite curious as to where and why these are the samples at play
+-   My question: Does rolling angle have an impact on material properties?
 
 ## Visualize
 
@@ -131,11 +153,59 @@ print("Very good!")
 
 ```{r q3-task}
 ## TASK: Investigate your question from q1 here
+##convert angle back to categorical data
+df_stang_plot <-
+  df_stang_long %>%
+  transform(angle = as.character(angle))
+
+df_stang_plot %>%
+  ggplot(aes(x = angle, y = E, fill = angle)) +
+  geom_boxplot() + 
+  labs(title = 'Young’s Modulus Relative to Rolling Angle', 
+       x = 'Rolling Angle (degrees)', 
+       y = 'Young’s Modulus (E)')
+
+df_stang_plot %>%
+  ggplot(aes(x = angle, y = E, color = angle)) +
+  geom_jitter(size = 3) +  
+  labs(title = 'Young’s Modulus Relative to Rolling Angle', 
+       x = 'Rolling Angle (degrees)', 
+       y = 'Young’s Modulus (E)') 
 ```
 
 **Observations**:
 
--   (Address your question from q1 here)
+-   There does not seem to be a strong trend here. It appears from the boxplot that the 45 degree samples are more consistent around the median value, which is slightly higher than the samples rolled at other angles. However, the maximum and minimum values are pretty similar regardless of direction, which makes me suspicious of drawing any conclusion. The scatterplot further confirms my suspicion that there doesn't really seem to be any meaningful trend.
+
+```{r q3-task-pt2}
+
+df_stang_plot %>%
+  ggplot(aes(x = angle, y = nu, fill = angle)) +
+  geom_boxplot() + 
+  labs(title = "Poisson's Ratio Relative to Rolling Angle", 
+       x = 'Rolling Angle (degrees)', 
+       y = "Poisson's Ratio (nu)")
+
+df_stang_plot %>%
+  ggplot(aes(x = angle, y = nu, color = angle)) +
+  geom_jitter(size = 3) + 
+  labs(title = "Poisson's Ratio Relative to Rolling Angle", 
+       x = 'Rolling Angle (degrees)', 
+       y = "Poisson's Ratio (nu)") 
+
+df_stang_plot %>%
+  ggplot(aes(x = nu, color = angle)) +
+  geom_density() + 
+  labs(title = "Density of Poisson's Ratio", 
+       x = "Poisson's Ratio (nu)") 
+```
+
+**Observations (Part 2!)**:
+
+-    The boxplot for Poisson's ratio shows a median which is comparatively higher at 45 degrees than other angles. From a mechanical perspective, this makes some degree of sense, since Poisson's ratio relates strain in perpendicular directions, and rotating some microstructure by 45 degrees could allow a better path for that to happen.
+-   Comparing to the scatterplot, this interpretation seems a bit more substantiated than for Young's modulus. The data does seem to show a concentration in 45-degree measurements around 0.330 that is much more defined than anything for the 0 or 90 degree samples. However, it still has a fairly high number of outliers (3/8 samples), and I'm hesitant to make any conclusion off of so few samples.
+-   The density plot shows a more defined mode for the 45 degree parts, which is another visualization for what I'm getting at, but it feels frankly kind of silly to make a density plot of so few points.
+-   All of this to say: I don't think its reasonable to conclude a relationship from this data. Its possible that more investigation, and particularly testing more samples *might* beget some trend, but it just as well might not. If there is orientation-related variation in strain, it seems to be very small, on the order of 1.8% (if we compare the medians). Hopefully, anyone who's designing parts with these materials has a factor of safety of more than 1.01, so its likely that this investigation isn't needed.
 
 ### **q4** Consider the following statement:
 
@@ -146,7 +216,6 @@ Note that the "amount of material" would vary with the thickness of a tested pla
 ```{r q4-vis}
 ## NOTE: No need to change; run this chunk
 df_stang_long %>%
-
   ggplot(aes(nu, E, color = as_factor(thick))) +
   geom_point(size = 3) +
   theme_minimal()
@@ -155,9 +224,11 @@ df_stang_long %>%
 **Observations**:
 
 -   Does this graph support or contradict the claim above?
-    -   (Your response here)
+    -   It seems to contradict the claim. Greater thickness appears to correspond to a lower elasticity modulus, at least for the 0.081 thickness
 -   Is this evidence *conclusive* one way or another?
-    -   (Your response here)
+    -   No
+    -   Outside of the 0.081 thickness, the other three thicknesses are pretty much comparable. If we exclude that data, the lowest value for E is found at the 0.032 thickness, the highest is shared by 0.022 and 0.064 thickness, but the medians and ranges really show no discernible trend.
+    -   This graph is also not a clear answer to that question, in my opinion. Why are we considering nu? Poisson's ratio should be a dimensionless constant for a material, so I suppose it could be used as a control against material chages, but this graph is super odd to me. I'd consider making a box or scatter plot of this data instead, bucketed by material thickness. Or maybe a geom_smooth plot overlaid with a scatter plot, to try and get an idea of the possible trend based on size. I feel like I've made enough graphs for today, though.
 
 # References
 
