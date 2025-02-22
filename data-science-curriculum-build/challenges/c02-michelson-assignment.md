@@ -323,21 +323,33 @@ human judgment.\[2\]
 ## TODO: Compare Michelson's estimate and error against the true value
 ## Your code here!
 tibble(
+  Michelsons_Estimate = LIGHTSPEED_MICHELSON,
   Lower_Bound = LIGHTSPEED_MICHELSON - LIGHTSPEED_PM,
   Upper_Bound = LIGHTSPEED_MICHELSON + LIGHTSPEED_PM,
-  True_speed = LIGHTSPEED_VACUUM
+  True_Speed = LIGHTSPEED_VACUUM,
+  True_Error = LIGHTSPEED_MICHELSON - LIGHTSPEED_VACUUM
 )
 ```
 
-    ## # A tibble: 1 × 3
-    ##   Lower_Bound Upper_Bound True_speed
-    ##         <dbl>       <dbl>      <dbl>
-    ## 1      299893      299995    299792.
+    ## # A tibble: 1 × 5
+    ##   Michelsons_Estimate Lower_Bound Upper_Bound True_Speed True_Error
+    ##                 <dbl>       <dbl>       <dbl>      <dbl>      <dbl>
+    ## 1              299944      299893      299995    299792.       152.
 
-**Observations**: - Is Michelson’s estimate of the error (his
-uncertainty) greater or less than the true error? - (Your response
-here) - Make a quantitative comparison between Michelson’s uncertainty
-and his error. - (Your response here)
+**Observations**:
+
+- Is Michelson’s estimate of the error (his uncertainty) greater or less
+  than the true error?
+
+  - Michelson’s error estimate is less than the true error - his range
+    does not include the true speed of light.
+
+- Make a quantitative comparison between Michelson’s uncertainty and his
+  error.
+
+  - Michelson estimated an error margin of +/-51 km/s, but his actual
+    estimate was off by 151 km/s. This is outside his range of
+    uncertainty by 100km/s.
 
 The following plot shows all of Michelson’s data as a [control
 chart](https://en.wikipedia.org/wiki/Control_chart); this sort of plot
@@ -542,7 +554,7 @@ df_q5 %>%
 
 ``` r
 df_q5 %>% 
-  ggplot(aes( x = Temp, y =VelocityVacuum)) +
+  ggplot(aes( x = Temp, y = VelocityVacuum)) +
   geom_point() +
   geom_smooth() + 
   geom_hline(yintercept = LIGHTSPEED_VACUUM, linetype = "dashed") +
@@ -555,7 +567,7 @@ df_q5 %>%
 
 ``` r
 df_q5 %>% 
-  ggplot(aes( x = Temp, y =Velocity)) +
+  ggplot(aes( x = Temp, y = Velocity)) +
   geom_smooth() + 
   geom_point() +
   geom_hline(yintercept = LIGHTSPEED_VACUUM, linetype = "dashed") +
