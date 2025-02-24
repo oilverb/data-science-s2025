@@ -49,11 +49,17 @@ cases <- tribble(
 cases
 ```
 
--   1) Country, 2011, 2012, and 2013
+-   
 
--   2) Country, year, and some unknown quantity (n, count, etc.)
+    1)  Country, 2011, 2012, and 2013
 
--   3) FR, DE, and US
+-   
+
+    2)  Country, year, and some unknown quantity (n, count, etc.)
+
+-   
+
+    3)  FR, DE, and US
 
 ```{r q1-test}
 ## TODO: Modify with your multiple choice number answer
@@ -83,11 +89,17 @@ alloys <- tribble(
 alloys
 ```
 
--   1) thick, E_00, mu_00, E_45, mu_45, rep
+-   
 
--   2) thick, E, mu, rep
+    1)  thick, E_00, mu_00, E_45, mu_45, rep
 
--   3) thick, E, mu, rep, angle
+-   
+
+    2)  thick, E, mu, rep
+
+-   
+
+    3)  thick, E, mu, rep, angle
 
 ```{r q2-test}
 ## TODO: Modify with your multiple choice number answer
