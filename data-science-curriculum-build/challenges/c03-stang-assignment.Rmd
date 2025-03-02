@@ -26,7 +26,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|------------------------|------------------------|------------------------|
+|----|----|----|
 | Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
@@ -202,7 +202,7 @@ df_stang_plot %>%
 
 **Observations (Part 2!)**:
 
--    The boxplot for Poisson's ratio shows a median which is comparatively higher at 45 degrees than other angles. From a mechanical perspective, this makes some degree of sense, since Poisson's ratio relates strain in perpendicular directions, and rotating some microstructure by 45 degrees could allow a better path for that to happen.
+-   The boxplot for Poisson's ratio shows a median which is comparatively higher at 45 degrees than other angles. From a mechanical perspective, this makes some degree of sense, since Poisson's ratio relates strain in perpendicular directions, and rotating some microstructure by 45 degrees could allow a better path for that to happen.
 -   Comparing to the scatterplot, this interpretation seems a bit more substantiated than for Young's modulus. The data does seem to show a concentration in 45-degree measurements around 0.330 that is much more defined than anything for the 0 or 90 degree samples. However, it still has a fairly high number of outliers (3/8 samples), and I'm hesitant to make any conclusion off of so few samples.
 -   The density plot shows a more defined mode for the 45 degree parts, which is another visualization for what I'm getting at, but it feels frankly kind of silly to make a density plot of so few points.
 -   All of this to say: I don't think its reasonable to conclude a relationship from this data. Its possible that more investigation, and particularly testing more samples *might* beget some trend, but it just as well might not. If there is orientation-related variation in strain, it seems to be very small, on the order of 1.8% (if we compare the medians). Hopefully, anyone who's designing parts with these materials has a factor of safety of more than 1.01, so its likely that this investigation isn't needed.
