@@ -124,7 +124,8 @@ df_q2 %>%
   geom_boxplot(
     data = . %>%
       filter(continent != "Oceania")
-  ) + geom_jitter(
+  ) + 
+  geom_jitter(
     data = . %>%
       filter(continent == "Oceania")
   ) +
@@ -243,11 +244,19 @@ gapminder %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
+```{r q4-skew}
+#thanks ZDR for this code chunk
+gapminder %>%
+  filter(year %in% c(year_min, year_max)) %>%
+  group_by(continent, year) %>%
+  summarize(skew = moments::skewness(gdpPercap))
+```
+
 **Observations**:
 
 -   There is a substantial amount of change in the 55 year period of this data set. I had to adjust my definition of an outlier to a country that is within 3 standard deviations of the mean, rather than 2 because the countries which were outliers changed from year to year. This resulted in a plot with too many individual color-coded points to be readable.
 -   On average, across every continent, GDP increased from 1952 to 2007. There are some individual countries which are exceptions to this, but for the median, 75th percentile, and maximum of each continent there is an upward trend. Kuwait is one noteable exception to this trend - Its GDP per capita dropped by nearly 50%. Africa, and the Americas also had the minimum GDP drop. What happened in Kuwait?
--   Most continents developed a less normal distribution in GDPs over the length of the dataset. The boxplots became less symmetric across the mean, with Asia and Africa developing a negative skew while Europe and the Americas skew more positive
+-   Most continents developed a less normal distribution in GDPs over the length of the dataset. The boxplots became less symmetric across the mean, with Asia and Africa developing a less negative skew while Europe and the Americas skew more negative.
 
 ```{r q4-nonlog}
 ## A second plot removing the log scale

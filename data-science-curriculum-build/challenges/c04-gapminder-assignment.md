@@ -76,7 +76,7 @@ library(tidyverse)
     ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
     ## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
     ## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-    ## ✔ purrr     1.0.2     
+    ## ✔ purrr     1.0.4     
     ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
@@ -204,7 +204,8 @@ df_q2 %>%
   geom_boxplot(
     data = . %>%
       filter(continent != "Oceania")
-  ) + geom_jitter(
+  ) + 
+  geom_jitter(
     data = . %>%
       filter(continent == "Oceania")
   ) +
@@ -382,6 +383,32 @@ gapminder %>%
 
 ![](c04-gapminder-assignment_files/figure-gfm/q4-task-1.png)<!-- -->
 
+``` r
+#thanks ZDR for this code chunk
+gapminder %>%
+  filter(year %in% c(year_min, year_max)) %>%
+  group_by(continent, year) %>%
+  summarize(skew = moments::skewness(gdpPercap))
+```
+
+    ## `summarise()` has grouped output by 'continent'. You can override using the
+    ## `.groups` argument.
+
+    ## # A tibble: 10 × 3
+    ## # Groups:   continent [5]
+    ##    continent  year      skew
+    ##    <fct>     <int>     <dbl>
+    ##  1 Africa     1952  1.75e+ 0
+    ##  2 Africa     2007  1.66e+ 0
+    ##  3 Americas   1952  2.11e+ 0
+    ##  4 Americas   2007  2.16e+ 0
+    ##  5 Asia       1952  5.38e+ 0
+    ##  6 Asia       2007  1.20e+ 0
+    ##  7 Europe     1952  8.21e- 1
+    ##  8 Europe     2007 -9.76e- 2
+    ##  9 Oceania    1952 -1.06e-14
+    ## 10 Oceania    2007  0
+
 **Observations**:
 
 - There is a substantial amount of change in the 55 year period of this
@@ -398,8 +425,8 @@ gapminder %>%
   also had the minimum GDP drop. What happened in Kuwait?
 - Most continents developed a less normal distribution in GDPs over the
   length of the dataset. The boxplots became less symmetric across the
-  mean, with Asia and Africa developing a negative skew while Europe and
-  the Americas skew more positive
+  mean, with Asia and Africa developing a less negative skew while
+  Europe and the Americas skew more negative.
 
 ``` r
 ## A second plot removing the log scale
