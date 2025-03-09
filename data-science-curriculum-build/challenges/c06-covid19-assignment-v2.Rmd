@@ -24,7 +24,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|------------------------|------------------------|------------------------|
+|----|----|----|
 | Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
@@ -93,7 +93,7 @@ That's the high-level view; now let's dig into the details.
 pop <- "./data/ACSDT5Y2018.B01003-Data.csv"
 pop_columns <- "./data/ACSDT5Y2018.B01003-Column-Metadata.csv"
 
-df_pop <- read_csv(filename, skip = 2, 
+df_pop <- read_csv(pop, skip = 2, 
                     na = "*****", 
                     col_types = "ccd_d__", 
                     col_names = c("id", 
@@ -168,7 +168,7 @@ df_q3 <-
   select(fips, 'Geographic Area Name', 'Estimate!!Total', 'Margin of Error!!Total')
 
 
-head(df_q3)
+
 
 ```
 
@@ -189,7 +189,9 @@ print("Very good!")
 
 ```{r q4-task}
 ## TASK: Join df_covid and df_q3 by fips.
-df_q4 <- left_join(df_covid, df_q3, by = "fips")
+df_q4 <- left_join(df_covid, df_q3, by = "fips") # %>%
+  # filter(!is.na(fips)) #remove NYT data that is missing a fips code
+   
 ```
 
 Use the following test to check your answer.
@@ -237,7 +239,7 @@ df_data <-
     deaths,
     population = `Estimate!!Total`
   )
-head(df_data)
+
 ```
 
 # Analyze
@@ -252,14 +254,37 @@ Now that we've done the hard work of loading and wrangling the data, we can fina
 
 ### **q5** Use the `population` estimates in `df_data` to normalize `cases` and `deaths` to produce per 100,000 counts [3]. Store these values in the columns `cases_per100k` and `deaths_per100k`.
 
+```{r q5-population diagnostic}
+#pulling this for reference later
+df_data %>%
+  filter(is.na(fips))
+
+df_data %>%
+  filter(is.na(population))
+
+df_data %>%
+  filter(is.na(population) & fips >= 0)
+
+
+#check df_covid for data missing fips
+
+df_covid %>% 
+  filter(is.na(fips))
+
+#check population data for data missing fips
+
+df_q3 %>%
+  filter(is.na(fips))
+```
+
 ```{r q5-task}
 ## TASK: Normalize cases and deaths
 df_normalized <-
   df_data %>%
+  filter(population > 0) %>%
   mutate(cases_per100k = (cases / population) * 100000,
          deaths_per100k = (deaths / population) * 100000
-  ) %>%
-  filter(cases_per100k <=0 | deaths_per100k <=0)
+  ) 
 
 df_normalized
 ```
@@ -334,8 +359,8 @@ Compute the mean and standard deviation for `cases_per100k` and `deaths_per100k`
 head(df_normalized)
 
 df_normalized %>%
-  filter(cases_per100k >= 0 & deaths_per100k >= 0) %>%
   summarise(
+    count_summarized = n(), # bonus line for me to track filtering
     mean_cases_per100k = mean(cases_per100k), 
     sd_cases_per100k = sd(cases_per100k), 
     mean_deaths_per100k = mean(deaths_per100k, na.rm = TRUE), 
@@ -345,25 +370,80 @@ df_normalized %>%
 ```
 
 -   Which rows did you pick?
-    -   (Your response here)
+    -   I summarized all cases in the US which are linked to a county without a population count
 -   Why?
-    -   (Your response here)
+    -   Initially, taking an average of all rows resulted in errors for all calculations. This is due to some cases and deaths which are tracked in places with no population count. The locations in question are NYC, as well as unknown counties in several other states and territories.
+    -   There is also something fishy going on with the NYT covid dataset - some of the data reported do not have a fips code, which also causes errors - since there is no fips code it is not possible to find population data to normalize by. I will be investigating this more later
+    -   There is enough fishyness in this dataset that I wanted to start with big-picture summaries before I decide where to focus
 
 ### **q7** Find and compare the top 10
 
 Find the top 10 counties in terms of `cases_per100k`, and the top 10 in terms of `deaths_per100k`. Report the population of each county along with the per-100,000 counts. Compare the counts against the mean values you found in q6. Note any observations.
 
-```{r q7-task}
+```{r q7-task-1}
 ## TASK: Find the top 10 max cases_per100k counties; report populations as well
+df_top10_cases <- 
+  df_normalized %>% 
+  group_by(county) %>% 
+  summarise(across(c(state, population, cases_per100k, deaths_per100k), max)) %>% 
+  arrange(desc(cases_per100k)) %>% 
+  slice(0:10)
 
+df_top10_cases
+
+```
+
+```{r q7-task-2}
 ## TASK: Find the top 10 deaths_per100k counties; report populations as well
+df_top10_deaths <- 
+  df_normalized %>% 
+  group_by(county) %>% 
+  summarise(across(c(state, population, cases_per100k, deaths_per100k), max)) %>% 
+  arrange(desc(deaths_per100k)) %>% 
+  slice(0:10)
+
+df_top10_deaths
+```
+
+```{r q7-viz-1}
+df_top10 <-
+  bind_rows(df_top10_cases, df_top10_deaths) 
+
+df_top10 %>%
+  ggplot(aes(x = cases_per100k, y = deaths_per100k, size = population, color = state)) +
+  geom_point(alpha = 0.9) +
+  # geom_smooth(data = df_top10%>%
+  #               filter(county != "Loving"),
+  #             aes(x = cases_per100k, y = deaths_per100k, group = 1),
+  #             show.legend = FALSE
+  #             ) +
+  ggtitle("Normalized Deaths vs Cases")
+
+```
+
+```{r q7-viz-2}
+df_normalized %>%
+  ggplot(aes(x = cases_per100k, y = deaths_per100k)) + 
+  # geom_smooth() + #this line seemed misleading
+  geom_point(size = 0.5, color = "gray", alpha = 0.1) +
+  geom_point(data = df_top10, 
+             aes(x = cases_per100k, 
+                 y = deaths_per100k, 
+                 size = population, 
+                 color = state), 
+             alpha = 0.7 )
 ```
 
 **Observations**:
 
--   (Note your observations here!)
+-   A majority of the top 10 counties for normalized case count were in either Alaska or Texas
+-   Loving, TX is the only county to be in the top 10 for both normalized cases and number of deaths - perhaps because it has an extremely low population of 107, which throws off the normalized data
+-   There is not a strong relationship between case count and death count. In fact, it seems like counties with a higher count of deaths per capita actually have a lower case count, at least among this limited set of samples. Perhaps this could be due to worse health outcomes in counties with a low testing rate? We would need to understand more than 19 counties in order to truly investigate that conjecture.
+    -   Adding the geom_point for the entire dataset disproved that general hypothesis across the data as a whole - It just happens that the upper outlier at each end corresponds to a reverse linear relationship, and the majority of the data shows the opposite trend (more cases -\> more deaths, generally)
+    -   Using normalized data for this plot feels inherently misleading - I believe net case count to normalized death count would be the correct plot to use to draw the conclusion about low testing rate. I'm investigating this more later
 -   When did these "largest values" occur?
-    -   (Your response here)
+    -   Loving, TX is an outlier for high case count in both departments.
+    -   All of the counties with a top 10 case count have a population of \<20k. This is small on the order of all counties in the US. All of the counties with a top 10 death count have a population of under 80k, which is still generally small-medium sized.
 
 ## Self-directed EDA
 
@@ -382,7 +462,124 @@ Find the top 10 counties in terms of `cases_per100k`, and the top 10 in terms of
 -   Fix the *geographic exceptions* noted below to study New York City.
 -   Your own idea!
 
-**DO YOUR OWN ANALYSIS HERE**
+**Topic: How does covid spread compare in low-population counties?**
+
+```{r q8-lowpop-exploration}
+
+#histogram to understand population range
+df_normalized %>%
+  ggplot(aes(population)) +
+  geom_histogram(bins = 25) +
+  scale_x_log10() +
+  geom_vline(xintercept = mean(df_normalized$population), 
+             linetype = "dashed",
+             color = "red") + 
+  geom_vline(xintercept = quantile(df_normalized$population,0.1),
+             linetype = "dashed",
+             color = "blue") + 
+  geom_vline(xintercept = quantile(df_normalized$population,0.9),
+             linetype = "dashed",
+             color = "blue") + 
+  labs(title = "Histogram of County Populations",
+       x = "Population (log scale)",
+       y = "Number of Counties") +
+  theme_minimal() + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+#create df filtered by counties with lowest 10th percentile of population
+df_lowpop <-
+  df_normalized %>%
+  group_by(county) %>%
+  filter(population < quantile(population, 0.25, na.rm = TRUE))
+
+df_lowpop %>%
+  ggplot(aes(x = cases, y = deaths_per100k)) + 
+  geom_point(size = 0.5, alpha = 0.1) + 
+  geom_smooth()
+
+df_lowpop %>%
+  ggplot(aes(x = cases_per100k, y = deaths_per100k)) + 
+  geom_point(size = 0.5, alpha = 0.1) + 
+  geom_smooth()
+
+df_lowpop %>%
+  ggplot(aes(x = cases, y = deaths)) + 
+  geom_point(size = 0.5, alpha = 0.1) + 
+  geom_smooth()
+```
+
+**Observations**
+
+-   Even at low populations, the general trend of low case count = low deaths holds true, but there is a wide variety of slopes in the relationship.
+
+-   It looks like some data points have a trail, so to speak - is this dataset plotting cases over time?
+
+-   Death rate per 100k seems to approach an asymptote after a certain normalized case count - above 30k/100k cases, the death count no longer increases by much. Or perhaps its more accurate to say that counties with a very high death count rarely reach a case count of over 30k/100k. Perhaps this is due to high death rates negatively impacting the spread of a disease, due to either people taking it more seriously or due to it making folks too sick to spread it? Lots of possibilities
+
+```{r q8-total-count}
+df_end <-
+  df_normalized %>%
+  group_by(county) %>%
+  filter(date == max(date))
+
+df_end %>%
+  ggplot(aes(population)) +
+  geom_histogram(bins = 25) +
+  scale_x_log10() +
+  geom_vline(xintercept = mean(df_end$population), 
+             linetype = "dashed",
+             color = "red") + 
+  geom_vline(xintercept = quantile(df_end$population,0.1),
+             linetype = "dashed",
+             color = "blue") + 
+  geom_vline(xintercept = quantile(df_end$population,0.9),
+             linetype = "dashed",
+             color = "blue") + 
+  labs(title = "Histogram of County Populations",
+       x = "Population (log scale)",
+       y = "Number of Counties") +
+  theme_minimal() + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+
+#create df filtered by counties with lowest 10th percentile of population
+df_lowpop_end <-
+  df_end %>%
+  group_by(county) %>%
+  filter(population < quantile(population, 0.25, na.rm = TRUE)) %>%
+  filter(county != "Loving") #filtered for better axes
+
+df_end %>%
+  ggplot(aes(x = cases, y = deaths_per100k, color = population)) + 
+  geom_point(alpha = 0.7)
+  #geom_smooth()
+
+df_end %>%
+  ggplot(aes(x = cases_per100k, y = deaths_per100k, color = population)) + 
+  geom_point(alpha = 0.7) 
+  # geom_smooth()
+
+df_end %>%
+  ggplot(aes(x = cases, y = deaths, color = population)) + 
+  geom_point(alpha = 0.7) 
+  # geom_smooth()
+```
+
+Observation
+
+-   Removing the tail and only plotting one point per county based on the last data entry virtually eliminated the trend from before! The real trend we were seeing was that cases and deaths in a county both increase over time
+
+-   Total death count and total case count are broadly speaking proportional - a county cannot have more deaths than cases
+
+-   Normalized death and case count have no real relationship. There is one notable outlier (Loving, TX) but otherwise there is generally no real trendline to be followed
+
+-   Normalized death count is highest in counties at the low end of total cases
+
+    -   This could be both small counties with high case count OR big counties with low case count
+
+    -   This may support the less cases = higher fatality rate hypothesis
 
 ### Aside: Some visualization tricks
 
@@ -402,7 +599,7 @@ df_normalized %>%
     aes(date, cases_per100k, color = fct_reorder2(county, date, cases_per100k))
   ) +
   geom_line() +
-  scale_y_log10(labels = scales::label_number_si()) +
+  scale_y_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   scale_color_discrete(name = "County") +
   theme_minimal() +
   labs(
