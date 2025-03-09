@@ -24,7 +24,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
@@ -40,7 +40,6 @@ Make sure to commit both the challenge report (`report.md` file) and supporting 
 
 ```{r setup}
 library(tidyverse)
-
 ```
 
 *Background*: [COVID-19](https://en.wikipedia.org/wiki/Coronavirus_disease_2019) is the disease caused by the virus SARS-CoV-2. In 2020 it became a global pandemic, leading to huge loss of life and tremendous disruption to society. The New York Times (as of writing) publishes up-to-date data on the progression of the pandemic across the United States---we will study these data in this challenge.
@@ -359,6 +358,9 @@ Compute the mean and standard deviation for `cases_per100k` and `deaths_per100k`
 head(df_normalized)
 
 df_normalized %>%
+  group_by(county)%>%
+  filter(date == max(date)) %>%
+  ungroup() %>%
   summarise(
     count_summarized = n(), # bonus line for me to track filtering
     mean_cases_per100k = mean(cases_per100k), 
@@ -371,6 +373,7 @@ df_normalized %>%
 
 -   Which rows did you pick?
     -   I summarized all cases in the US which are linked to a county without a population count
+    -   I also filtered to only pull the final date from each county, so the data isn't misleadingly negative to to early readings.
 -   Why?
     -   Initially, taking an average of all rows resulted in errors for all calculations. This is due to some cases and deaths which are tracked in places with no population count. The locations in question are NYC, as well as unknown counties in several other states and territories.
     -   There is also something fishy going on with the NYT covid dataset - some of the data reported do not have a fips code, which also causes errors - since there is no fips code it is not possible to find population data to normalize by. I will be investigating this more later
