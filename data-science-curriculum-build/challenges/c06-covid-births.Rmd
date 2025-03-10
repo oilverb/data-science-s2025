@@ -1,0 +1,38 @@
+---
+title: "covid-births"
+output: html_document
+date: "2025-03-10"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Covid Birth Comparison
+
+Pull CDC wonder data
+
+```{r pull-births}
+# Load necessary library
+library(readxl)
+birth <- "./data/covid_birth_data.xlsx"
+# Read the dataset
+df_births <- read_excel(birth, sheet = 1)
+
+# Remove rows where any column contains "Total"
+df_births_cleaned <- 
+  df_births[!apply(df, 1, function(row) any(grepl("Total", row, ignore.case = TRUE))), ]
+
+# Display the filtered dataset
+head(df_births_cleaned)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
