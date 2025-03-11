@@ -1,51 +1,30 @@
-Gapminder
-================
-Oliver Buchwald
-2025-03-02
+# Gapminder
 
-- [Grading Rubric](#grading-rubric)
-  - [Individual](#individual)
-  - [Submission](#submission)
-- [Guided EDA](#guided-eda)
-  - [**q0** Perform your “first checks” on the dataset. What variables
-    are in
-    this](#q0-perform-your-first-checks-on-the-dataset-what-variables-are-in-this)
-  - [**q1** Determine the most and least recent years in the `gapminder`
-    dataset.](#q1-determine-the-most-and-least-recent-years-in-the-gapminder-dataset)
-  - [**q2** Filter on years matching `year_min`, and make a plot of the
-    GDP per capita against continent. Choose an appropriate `geom_` to
-    visualize the data. What observations can you
-    make?](#q2-filter-on-years-matching-year_min-and-make-a-plot-of-the-gdp-per-capita-against-continent-choose-an-appropriate-geom_-to-visualize-the-data-what-observations-can-you-make)
-  - [**q3** You should have found *at least* three outliers in q2 (but
-    possibly many more!). Identify those outliers (figure out which
-    countries they
-    are).](#q3-you-should-have-found-at-least-three-outliers-in-q2-but-possibly-many-more-identify-those-outliers-figure-out-which-countries-they-are)
-  - [**q4** Create a plot similar to yours from q2 studying both
-    `year_min` and `year_max`. Find a way to highlight the outliers from
-    q3 on your plot *in a way that lets you identify which country is
-    which*. Compare the patterns between `year_min` and
-    `year_max`.](#q4-create-a-plot-similar-to-yours-from-q2-studying-both-year_min-and-year_max-find-a-way-to-highlight-the-outliers-from-q3-on-your-plot-in-a-way-that-lets-you-identify-which-country-is-which-compare-the-patterns-between-year_min-and-year_max)
-- [Your Own EDA](#your-own-eda)
-  - [**q5** Create *at least* three new figures below. With each figure,
-    try to pose new questions about the
-    data.](#q5-create-at-least-three-new-figures-below-with-each-figure-try-to-pose-new-questions-about-the-data)
+Oliver Buchwald 2025-03-02
 
-*Purpose*: Learning to do EDA well takes practice! In this challenge
-you’ll further practice EDA by first completing a guided exploration,
-then by conducting your own investigation. This challenge will also give
-you a chance to use the wide variety of visual tools we’ve been
-learning.
+-   [Grading Rubric](#grading-rubric)
+    -   [Individual](#individual)
+    -   [Submission](#submission)
+-   [Guided EDA](#guided-eda)
+    -   [**q0** Perform your “first checks” on the dataset. What variables are in this](#q0-perform-your-first-checks-on-the-dataset-what-variables-are-in-this)
+    -   [**q1** Determine the most and least recent years in the `gapminder` dataset.](#q1-determine-the-most-and-least-recent-years-in-the-gapminder-dataset)
+    -   [**q2** Filter on years matching `year_min`, and make a plot of the GDP per capita against continent. Choose an appropriate `geom_` to visualize the data. What observations can you make?](#q2-filter-on-years-matching-year_min-and-make-a-plot-of-the-gdp-per-capita-against-continent-choose-an-appropriate-geom_-to-visualize-the-data-what-observations-can-you-make)
+    -   [**q3** You should have found *at least* three outliers in q2 (but possibly many more!). Identify those outliers (figure out which countries they are).](#q3-you-should-have-found-at-least-three-outliers-in-q2-but-possibly-many-more-identify-those-outliers-figure-out-which-countries-they-are)
+    -   [**q4** Create a plot similar to yours from q2 studying both `year_min` and `year_max`. Find a way to highlight the outliers from q3 on your plot *in a way that lets you identify which country is which*. Compare the patterns between `year_min` and `year_max`.](#q4-create-a-plot-similar-to-yours-from-q2-studying-both-year_min-and-year_max-find-a-way-to-highlight-the-outliers-from-q3-on-your-plot-in-a-way-that-lets-you-identify-which-country-is-which-compare-the-patterns-between-year_min-and-year_max)
+-   [Your Own EDA](#your-own-eda)
+    -   [**q5** Create *at least* three new figures below. With each figure, try to pose new questions about the data.](#q5-create-at-least-three-new-figures-below-with-each-figure-try-to-pose-new-questions-about-the-data)
+
+*Purpose*: Learning to do EDA well takes practice! In this challenge you’ll further practice EDA by first completing a guided exploration, then by conducting your own investigation. This challenge will also give you a chance to use the wide variety of visual tools we’ve been learning.
 
 <!-- include-rubric -->
 
-# Grading Rubric
+# Grading Rubric {#grading-rubric}
 
 <!-- -------------------------------------------------- -->
 
-Unlike exercises, **challenges will be graded**. The following rubrics
-define how you will be graded, both on an individual and team basis.
+Unlike exercises, **challenges will be graded**. The following rubrics define how you will be graded, both on an individual and team basis.
 
-## Individual
+## Individual {#individual}
 
 <!-- ------------------------- -->
 
@@ -58,48 +37,40 @@ define how you will be graded, both on an individual and team basis.
 | Specified | Uses the phrase “more data are necessary” without clarification | Any statement that “more data are necessary” specifies which *specific* data are needed to answer what *specific* question |
 | Code Styled | Violations of the [style guide](https://style.tidyverse.org/) hinder readability | Code sufficiently close to the [style guide](https://style.tidyverse.org/) |
 
-## Submission
+## Submission {#submission}
 
 <!-- ------------------------- -->
 
-Make sure to commit both the challenge report (`report.md` file) and
-supporting files (`report_files/` folder) when you are done! Then submit
-a link to Canvas. **Your Challenge submission is not complete without
-all files uploaded to GitHub.**
+Make sure to commit both the challenge report (`report.md` file) and supporting files (`report_files/` folder) when you are done! Then submit a link to Canvas. **Your Challenge submission is not complete without all files uploaded to GitHub.**
 
 ``` r
 library(tidyverse)
 ```
 
-    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-    ## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-    ## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-    ## ✔ purrr     1.0.4     
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+```         
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+## ✔ purrr     1.0.4     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+```
 
 ``` r
 library(gapminder)
 ```
 
-*Background*: [Gapminder](https://www.gapminder.org/about-gapminder/) is
-an independent organization that seeks to educate people about the state
-of the world. They seek to counteract the worldview constructed by a
-hype-driven media cycle, and promote a “fact-based worldview” by
-focusing on data. The dataset we’ll study in this challenge is from
-Gapminder.
+*Background*: [Gapminder](https://www.gapminder.org/about-gapminder/) is an independent organization that seeks to educate people about the state of the world. They seek to counteract the worldview constructed by a hype-driven media cycle, and promote a “fact-based worldview” by focusing on data. The dataset we’ll study in this challenge is from Gapminder.
 
-# Guided EDA
+# Guided EDA {#guided-eda}
 
 <!-- -------------------------------------------------- -->
 
-First, we’ll go through a round of *guided EDA*. Try to pay attention to
-the high-level process we’re going through—after this guided round
-you’ll be responsible for doing another cycle of EDA on your own!
+First, we’ll go through a round of *guided EDA*. Try to pay attention to the high-level process we’re going through—after this guided round you’ll be responsible for doing another cycle of EDA on your own!
 
 ### **q0** Perform your “first checks” on the dataset. What variables are in this
 
@@ -111,29 +82,32 @@ gapminder %>%
   colnames()
 ```
 
-    ## [1] "country"   "continent" "year"      "lifeExp"   "pop"       "gdpPercap"
+```         
+## [1] "country"   "continent" "year"      "lifeExp"   "pop"       "gdpPercap"
+```
 
 ``` r
 gapminder %>%
   size_sum()
 ```
 
-    ## [1] "[1,704 × 6]"
+```         
+## [1] "[1,704 × 6]"
+```
 
 **Observations**:
 
-- Write all variable names here
-  - country
-  - continent
-  - year
-  - life expectancy
-  - population
-  - GDP per capita
+-   Write all variable names here
+    -   country
+    -   continent
+    -   year
+    -   life expectancy
+    -   population
+    -   GDP per capita
 
 ### **q1** Determine the most and least recent years in the `gapminder` dataset.
 
-*Hint*: Use the `pull()` function to get a vector out of a tibble.
-(Rather than the `$` notation of base R.)
+*Hint*: Use the `pull()` function to get a vector out of a tibble. (Rather than the `$` notation of base R.)
 
 ``` r
 ## TASK: Find the largest and smallest values of `year` in `gapminder`
@@ -155,25 +129,33 @@ Use the following test to check your work.
 assertthat::assert_that(year_max %% 7 == 5)
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 assertthat::assert_that(year_max %% 3 == 0)
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 assertthat::assert_that(year_min %% 7 == 6)
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 assertthat::assert_that(year_min %% 3 == 2)
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 if (is_tibble(year_max)) {
@@ -184,13 +166,13 @@ if (is_tibble(year_max)) {
 print("Nice!")
 ```
 
-    ## [1] "Nice!"
+```         
+## [1] "Nice!"
+```
 
 ### **q2** Filter on years matching `year_min`, and make a plot of the GDP per capita against continent. Choose an appropriate `geom_` to visualize the data. What observations can you make?
 
-You may encounter difficulties in visualizing these data; if so document
-your challenges and attempt to produce the most informative visual you
-can.
+You may encounter difficulties in visualizing these data; if so document your challenges and attempt to produce the most informative visual you can.
 
 ``` r
 ## TASK: Create a visual of gdpPercap vs continent
@@ -217,25 +199,16 @@ df_q2 %>%
 
 **Observations**:
 
-- Africa has he lowest GDP per capita
-- Asia has a very large outlier, and the widest range of GDPs
-- Oceania has only 2 data points, both of which are quite high compared
-  to the glove as a whole
-- The Americas are merged into one category in this data set. I’m
-  curious if there would be any distinctive split between North & South
-  America if they were plotted separately
+-   Africa has he lowest GDP per capita
+-   Asia has a very large outlier, and the widest range of GDPs
+-   Oceania has only 2 data points, both of which are quite high compared to the glove as a whole
+-   The Americas are merged into one category in this data set. I’m curious if there would be any distinctive split between North & South America if they were plotted separately
 
 **Difficulties & Approaches**:
 
-- The extreme outlier with a high GDP in asia, which makes the data
-  quite hard to view - I’m using a log scale to correct against this
-- I considered a scatter plot instead of the box plot, but there are
-  enough data points in this set that it was unclear to see trends.
-  Perhaps a sinaplot would help with this, but I didn’t feel it was
-  quite worth it at this stage
-- The log scale does make comparisons of the amount of variation in each
-  continent difficult. It looks like Europe and Africa have an equally
-  wide distribution, but my next plot will show this is not the case.
+-   The extreme outlier with a high GDP in asia, which makes the data quite hard to view - I’m using a log scale to correct against this
+-   I considered a scatter plot instead of the box plot, but there are enough data points in this set that it was unclear to see trends. Perhaps a sinaplot would help with this, but I didn’t feel it was quite worth it at this stage
+-   The log scale does make comparisons of the amount of variation in each continent difficult. It looks like Europe and Africa have an equally wide distribution, but my next plot will show this is not the case.
 
 ``` r
 df_q2 %>% 
@@ -245,25 +218,19 @@ df_q2 %>%
   xlim(0,15000)
 ```
 
-    ## Warning: Removed 1 row containing non-finite outside the scale range
-    ## (`stat_boxplot()`).
+```         
+## Warning: Removed 1 row containing non-finite outside the scale range
+## (`stat_boxplot()`).
+```
 
 ![](c04-gapminder-assignment_files/figure-gfm/q2-nonlog%20plot-1.png)<!-- -->
 
 **Observations**:
 
-- This plot is not complete! I set limits on the x axis so that it
-  excludes the very high outlier in Asia, and adjusted it back to a
-  regular, non-log scale
-- Excluding that datapoint makes it clearer to see the values of
-  outliers for other continents. This plot exists primarily to validate
-  my filtering on the next question.
-- These axes really drive home that Africa has a lower GDP than other
-  continents, and emphasizes that there are only a few outliers in Asia
-  among an otherwise low GDP
-- Europe appears to have a larger standard deviation than other
-  countries. While its min-max range is smaller than Asia, it has much
-  more variation within that range.
+-   This plot is not complete! I set limits on the x axis so that it excludes the very high outlier in Asia, and adjusted it back to a regular, non-log scale
+-   Excluding that datapoint makes it clearer to see the values of outliers for other continents. This plot exists primarily to validate my filtering on the next question.
+-   These axes really drive home that Africa has a lower GDP than other continents, and emphasizes that there are only a few outliers in Asia among an otherwise low GDP
+-   Europe appears to have a larger standard deviation than other countries. While its min-max range is smaller than Asia, it has much more variation within that range.
 
 ### **q3** You should have found *at least* three outliers in q2 (but possibly many more!). Identify those outliers (figure out which countries they are).
 
@@ -281,51 +248,40 @@ outlier_list <-
 outlier_list
 ```
 
-    ## # A tibble: 7 × 4
-    ## # Groups:   continent [4]
-    ##   country       continent gdpPercap  year
-    ##   <fct>         <fct>         <dbl> <int>
-    ## 1 Angola        Africa        3521.  1952
-    ## 2 Canada        Americas     11367.  1952
-    ## 3 Gabon         Africa        4293.  1952
-    ## 4 Kuwait        Asia        108382.  1952
-    ## 5 South Africa  Africa        4725.  1952
-    ## 6 Switzerland   Europe       14734.  1952
-    ## 7 United States Americas     13990.  1952
+```         
+## # A tibble: 7 × 4
+## # Groups:   continent [4]
+##   country       continent gdpPercap  year
+##   <fct>         <fct>         <dbl> <int>
+## 1 Angola        Africa        3521.  1952
+## 2 Canada        Americas     11367.  1952
+## 3 Gabon         Africa        4293.  1952
+## 4 Kuwait        Asia        108382.  1952
+## 5 South Africa  Africa        4725.  1952
+## 6 Switzerland   Europe       14734.  1952
+## 7 United States Americas     13990.  1952
+```
 
 ``` r
 outlier_list %>%
   pull(country)
 ```
 
-    ## [1] Angola        Canada        Gabon         Kuwait        South Africa 
-    ## [6] Switzerland   United States
-    ## 142 Levels: Afghanistan Albania Algeria Angola Argentina Australia ... Zimbabwe
+```         
+## [1] Angola        Canada        Gabon         Kuwait        South Africa 
+## [6] Switzerland   United States
+## 142 Levels: Afghanistan Albania Algeria Angola Argentina Australia ... Zimbabwe
+```
 
 **Observations**:
 
-- Identify the outlier countries from q2
-  - First I tried filtering by percentile, I quickly realized that isn’t
-    what we need here- it just finds the max and min values of the
-    dataset, and switched to using standard deviation to filter out all
-    data points which are \>2 std dev from the mean
-  - The table above lists 7 countries which could be considered outliers
-    based on that metric. This is corroborated by the 2nd boxplot from
-    the previous question, which confirms that the GDP listed represents
-    the actual outliers in the dataset
-    - The countries in question are Angola, Canada, Gabon, Kuwait, South
-      Africa, Switzerland, and the United States
-  - I would also consider the continent of Oceania to be an outlier in
-    this dataset as it only contains two countries. The countries aren’t
-    outliers relative to the continent because there’s not enough data
-    to say what an outlier is, but they’re both very high relative to
-    the entire dataset.
+-   Identify the outlier countries from q2
+    -   First I tried filtering by percentile, I quickly realized that isn’t what we need here- it just finds the max and min values of the dataset, and switched to using standard deviation to filter out all data points which are \>2 std dev from the mean
+    -   The table above lists 7 countries which could be considered outliers based on that metric. This is corroborated by the 2nd boxplot from the previous question, which confirms that the GDP listed represents the actual outliers in the dataset
+        -   The countries in question are Angola, Canada, Gabon, Kuwait, South Africa, Switzerland, and the United States
+    -   I would also consider the continent of Oceania to be an outlier in this dataset as it only contains two countries. The countries aren’t outliers relative to the continent because there’s not enough data to say what an outlier is, but they’re both very high relative to the entire dataset.
 
-*Hint*: For the next task, it’s helpful to know a ggplot trick we’ll
-learn in an upcoming exercise: You can use the `data` argument inside
-any `geom_*` to modify the data that will be plotted *by that geom
-only*. For instance, you can use this trick to filter a set of points to
-label:
+*Hint*: For the next task, it’s helpful to know a ggplot trick we’ll learn in an upcoming exercise: You can use the `data` argument inside any `geom_*` to modify the data that will be plotted *by that geom only*. For instance, you can use this trick to filter a set of points to label:
 
 ``` r
 ## NOTE: No need to edit, use ideas from this in q4 below
@@ -345,8 +301,7 @@ gapminder %>%
 
 ### **q4** Create a plot similar to yours from q2 studying both `year_min` and `year_max`. Find a way to highlight the outliers from q3 on your plot *in a way that lets you identify which country is which*. Compare the patterns between `year_min` and `year_max`.
 
-*Hint*: We’ve learned a lot of different ways to show multiple
-variables; think about using different aesthetics or facets.
+*Hint*: We’ve learned a lot of different ways to show multiple variables; think about using different aesthetics or facets.
 
 ``` r
 ## TASK: Create a visual of gdpPercap vs continent
@@ -391,42 +346,31 @@ gapminder %>%
   summarize(skew = moments::skewness(gdpPercap))
 ```
 
-    ## `summarise()` has grouped output by 'continent'. You can override using the
-    ## `.groups` argument.
+```         
+## `summarise()` has grouped output by 'continent'. You can override using the
+## `.groups` argument.
 
-    ## # A tibble: 10 × 3
-    ## # Groups:   continent [5]
-    ##    continent  year      skew
-    ##    <fct>     <int>     <dbl>
-    ##  1 Africa     1952  1.75e+ 0
-    ##  2 Africa     2007  1.66e+ 0
-    ##  3 Americas   1952  2.11e+ 0
-    ##  4 Americas   2007  2.16e+ 0
-    ##  5 Asia       1952  5.38e+ 0
-    ##  6 Asia       2007  1.20e+ 0
-    ##  7 Europe     1952  8.21e- 1
-    ##  8 Europe     2007 -9.76e- 2
-    ##  9 Oceania    1952 -1.06e-14
-    ## 10 Oceania    2007  0
+## # A tibble: 10 × 3
+## # Groups:   continent [5]
+##    continent  year      skew
+##    <fct>     <int>     <dbl>
+##  1 Africa     1952  1.75e+ 0
+##  2 Africa     2007  1.66e+ 0
+##  3 Americas   1952  2.11e+ 0
+##  4 Americas   2007  2.16e+ 0
+##  5 Asia       1952  5.38e+ 0
+##  6 Asia       2007  1.20e+ 0
+##  7 Europe     1952  8.21e- 1
+##  8 Europe     2007 -9.76e- 2
+##  9 Oceania    1952 -1.06e-14
+## 10 Oceania    2007  0
+```
 
 **Observations**:
 
-- There is a substantial amount of change in the 55 year period of this
-  data set. I had to adjust my definition of an outlier to a country
-  that is within 3 standard deviations of the mean, rather than 2
-  because the countries which were outliers changed from year to year.
-  This resulted in a plot with too many individual color-coded points to
-  be readable.
-- On average, across every continent, GDP increased from 1952 to 2007.
-  There are some individual countries which are exceptions to this, but
-  for the median, 75th percentile, and maximum of each continent there
-  is an upward trend. Kuwait is one noteable exception to this trend -
-  Its GDP per capita dropped by nearly 50%. Africa, and the Americas
-  also had the minimum GDP drop. What happened in Kuwait?
-- Most continents developed a less normal distribution in GDPs over the
-  length of the dataset. The boxplots became less symmetric across the
-  mean, with Asia and Africa developing a less negative skew while
-  Europe and the Americas skew more negative.
+-   There is a substantial amount of change in the 55 year period of this data set. I had to adjust my definition of an outlier to a country that is within 3 standard deviations of the mean, rather than 2 because the countries which were outliers changed from year to year. This resulted in a plot with too many individual color-coded points to be readable.
+-   On average, across every continent, GDP increased from 1952 to 2007. There are some individual countries which are exceptions to this, but for the median, 75th percentile, and maximum of each continent there is an upward trend. Kuwait is one noteable exception to this trend - Its GDP per capita dropped by nearly 50%. Africa, and the Americas also had the minimum GDP drop. What happened in Kuwait?
+-   Most continents developed a less normal distribution in GDPs over the length of the dataset. The boxplots became less symmetric across the mean, with Asia and Africa developing a less negative skew while Europe and the Americas skew more negative.
 
 ``` r
 ## A second plot removing the log scale
@@ -450,19 +394,15 @@ gapminder %>%
 
 ![](c04-gapminder-assignment_files/figure-gfm/q4-nonlog-1.png)<!-- -->
 
-# Your Own EDA
+# Your Own EDA {#your-own-eda}
 
 <!-- -------------------------------------------------- -->
 
-Now it’s your turn! We just went through guided EDA considering the GDP
-per capita at two time points. You can continue looking at outliers,
-consider different years, repeat the exercise with `lifeExp`, consider
-the relationship between variables, or something else entirely.
+Now it’s your turn! We just went through guided EDA considering the GDP per capita at two time points. You can continue looking at outliers, consider different years, repeat the exercise with `lifeExp`, consider the relationship between variables, or something else entirely.
 
 ### **q5** Create *at least* three new figures below. With each figure, try to pose new questions about the data.
 
-**Question:** What is going on with Kuwait? Is there anything else weird
-about its data?
+**Question:** What is going on with Kuwait? Is there anything else weird about its data?
 
 ``` r
 ## TASK: Your first graph
@@ -546,21 +486,12 @@ metrics_means <- gapminder %>%
 
 ![](c04-gapminder-assignment_files/figure-gfm/q5-task1-part2-1.png)<!-- -->
 
-- Kuwait’s GDP began to drop drastically from 1970 to 1980. In the 90s
-  and 2000s it began increasing again. It is still significantly higher
-  than the average GDP of both the continent and the globe.
-  - This seems to correspond to the 1973 oil crisis, as Kuwait’s economy
-    is significantly reliant on oil
-- It seems that the mean of GDPs in Asia experiences a slight dip in
-  that time period as well - possibly because Kuwait’s GDP is just that
-  high, and its crash dragged down the mean of the continent as a whole.
-- Kuwait has a generally high life expectancy and generally low
-  population, but the turmoil in its GDP did not seem to have an impact
-  on either of these values. Population and life expectancy continually
-  trended upwards
+-   Kuwait’s GDP began to drop drastically from 1970 to 1980. In the 90s and 2000s it began increasing again. It is still significantly higher than the average GDP of both the continent and the globe.
+    -   This seems to correspond to the 1973 oil crisis, as Kuwait’s economy is significantly reliant on oil
+-   It seems that the mean of GDPs in Asia experiences a slight dip in that time period as well - possibly because Kuwait’s GDP is just that high, and its crash dragged down the mean of the continent as a whole.
+-   Kuwait has a generally high life expectancy and generally low population, but the turmoil in its GDP did not seem to have an impact on either of these values. Population and life expectancy continually trended upwards
 
-**Question:** Is there a relationship between GDP, Life Expectancy &
-population?
+**Question:** Is there a relationship between GDP, Life Expectancy & population?
 
 ``` r
 ## TASK: Your second graph
@@ -580,28 +511,19 @@ gapminder %>%
       )
 ```
 
-    ## Warning: Removed 1 row containing missing values or values outside the scale range
-    ## (`geom_point()`).
+```         
+## Warning: Removed 1 row containing missing values or values outside the scale range
+## (`geom_point()`).
+```
 
 ![](c04-gapminder-assignment_files/figure-gfm/q5-task2-1.png)<!-- -->
 
-- Note: the y axis is truncated to exclude Kuwait from the 1952 data so
-  that the plots are clearer to read. It has a GDP of 108,000 per
-  capita, a life expectancy of 55.5, and a population of 160,000
-- Generally speaking, high GDP corresponds to higher life expectancy.
-- There is not a strong relationship between population and either GDP
-  or life expectancy. It appears that the countries with the highest
-  population have a life expectancy that is near the median of the
-  dataset. It effectively seems like countries with a low life
-  expectancy do not have a large population, but a high life expectancy
-  is not a guarantee of high population - likely due to birthrates
-- European countries tend to have the highest life expectancy and GDPs,
-  while African countries are the lowest.
-- The data is more heavily segmented by continent in 2007 and 1952. On a
-  global scale, the data from 1952 shows values for countries in each
-  continent that are much closer together than 2007.
-- Life expectancy overall increased from 1952 to 2007 by around 10
-  years.
+-   Note: the y axis is truncated to exclude Kuwait from the 1952 data so that the plots are clearer to read. It has a GDP of 108,000 per capita, a life expectancy of 55.5, and a population of 160,000
+-   Generally speaking, high GDP corresponds to higher life expectancy.
+-   There is not a strong relationship between population and either GDP or life expectancy. It appears that the countries with the highest population have a life expectancy that is near the median of the dataset. It effectively seems like countries with a low life expectancy do not have a large population, but a high life expectancy is not a guarantee of high population - likely due to birthrates
+-   European countries tend to have the highest life expectancy and GDPs, while African countries are the lowest.
+-   The data is more heavily segmented by continent in 2007 and 1952. On a global scale, the data from 1952 shows values for countries in each continent that are much closer together than 2007.
+-   Life expectancy overall increased from 1952 to 2007 by around 10 years.
 
 **Question:** How has population growth happened over time?
 
@@ -658,24 +580,14 @@ df_pop_growth %>%
   )
 ```
 
-    ## Adding missing grouping variables: `continent`
-    ## `geom_smooth()` using formula = 'y ~ x'
+```         
+## Adding missing grouping variables: `continent`
+## `geom_smooth()` using formula = 'y ~ x'
+```
 
 ![](c04-gapminder-assignment_files/figure-gfm/q5-task3-1.png)<!-- -->
 
-- For these plots, I normalized the population growth by dividing
-  population of each country by its population in 1955. This makes it
-  much clearer to compare growth without a few high-population outliers
-  compressing the axes excessively.
-- Asia and africa have the greatest proportion of population growth rate
-  of any continent
-- Interestingly, Kuwait has the highest rate of population increase per
-  capita, despite its low population. This is a noteable limitation of
-  this plot that it doesn’t consider actual population size, only growth
-  rates. Djibouti and another country in Asia are other noteably
-  high-growth countries, with the population growing 8x in this 55year
-  period
-- Europe and Oceania both experience very low growth in population, with
-  a growth rate of ~1.5x and 2x respectively. Bulgaria is the country
-  with the lowest population growth of all, at a rate of \<1% growth
-  over the entire dataset.
+-   For these plots, I normalized the population growth by dividing population of each country by its population in 1955. This makes it much clearer to compare growth without a few high-population outliers compressing the axes excessively.
+-   Asia and africa have the greatest proportion of population growth rate of any continent
+-   Interestingly, Kuwait has the highest rate of population increase per capita, despite its low population. This is a noteable limitation of this plot that it doesn’t consider actual population size, only growth rates. Djibouti and another country in Asia are other noteably high-growth countries, with the population growing 8x in this 55year period
+-   Europe and Oceania both experience very low growth in population, with a growth rate of \~1.5x and 2x respectively. Bulgaria is the country with the lowest population growth of all, at a rate of \<1% growth over the entire dataset.

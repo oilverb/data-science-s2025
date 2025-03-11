@@ -50,7 +50,7 @@ df_covid <- read_csv(filename_nyt)
 head(df_covid)
 ```
 
-### Clean & Filter data 
+### Clean & Filter data
 
 ```{r census-fips}
 ## TASK: Create a `fips` column by extracting the county code
@@ -97,35 +97,66 @@ Pull CDC wonder data from here: <https://wonder.cdc.gov/natality-expanded-curren
 This code processes an excel file downloaded by using this tool to generate a list of birth rates grouped by county and month
 
 ```{r pull-births}
-# Load necessary library
+
+## load dataset
 library(readxl)
 birth <- "./data/covid_birth_data.xlsx"
-# Read the dataset
 df_births <- read_excel(birth, sheet = 1)
 
-# 
+## tidy data
 df_births_cleaned <- 
-  #remove extra rows for computed totals
+  ## remove extra rows for computed totals
   df_births[!apply(df_births, 1, function(row) any(grepl("Total", row, ignore.case = TRUE))), ] %>%
-  #simplify colnames for consistency
-  rename(fips = 'County of Residence Code') %>%
+  ## simplify colnames for consistency
   rename(births = Births) %>%
-  #encode date column as the 1st of the month following the end of the month eg January 2020 -> 2020-02-01
+  rename(fips = 'County of Residence Code') %>%
+  mutate(fips = as.character(fips)) %>%
+  mutate(fips = str_pad(as.character(fips), width = 5, pad = "0")) %>%
+  ## encode date column as the 1st of the month following the end of the month eg January 2020 -> 2020-02-01
   mutate(date = str_glue("{`Year Code`}-{`Month Code`}-01")) %>%
   mutate(date = as.Date(date)) %>%
   mutate(birth_date = date %m+% months(1)) %>%
   mutate(sex_date = date %m-% months(9)) %>%
-  #pull only relevant data
+  ## pull only relevant data
   select(fips, birth_date, sex_date, births)
   
-# Display the filtered dataset
+
 head(df_births_cleaned)
 ```
 
+```{r consolidate-covid-data}
+
+df_covid_month <- df_covid %>%
+  ## round date to the 1st of next month
+  mutate(year_month = ceiling_date(date, unit = "month")) %>% 
+  ## pull only the last data point of the month per county
+  group_by(fips, year_month) %>%
+  filter(date == max(date)) %>%  
+  arrange(fips, year_month) %>%  
+  ungroup() %>%
+  ## compute new cases and deaths occuring that month
+  group_by(fips) %>%
+  mutate(
+    new_cases = cases - lag(cases, default = 0),   
+    new_deaths = deaths - lag(deaths, default = 0) 
+  ) %>%
+  ## log only relevant data
+  select(fips, year_month, cases, new_cases,deaths, new_deaths) %>%  
+  ungroup()
+
+head(df_covid_month)
+
+```
+
 ```{r join-all-data}
-df_covid_births <- left_join(df_covid, df_q3, by = "fips") # %>%
+df_covid_births <- 
+  df_births_cleaned %>%
+  left_join(df_covid_month, by = c("fips","sex_date" = "year_month")) %>%
+  # rename(sex_date = year_month) %>%
+  left_join(df_q3, by = "fips") 
   # filter(!is.na(fips)) #remove NYT data that is missing a fips code
    
+head(df_covid_births)
 ```
 
 ## Test Plots
@@ -133,8 +164,13 @@ df_covid_births <- left_join(df_covid, df_q3, by = "fips") # %>%
 You can also embed plots, for example:
 
 ```{r birthgraph}
-df_births_cleaned %>%
+df_covid_births %>%
   ggplot(aes(x = sex_date, y = births, group = fips)) +
+  geom_line(alpha = 0.5) + 
+  geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dashed", color = "red")
+
+df_covid_births %>%
+  ggplot(aes(x = sex_date, y = new_cases, group = fips)) +
   geom_line(alpha = 0.5) + 
   geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dashed", color = "red")
 
