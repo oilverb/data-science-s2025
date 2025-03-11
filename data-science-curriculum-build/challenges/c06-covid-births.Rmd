@@ -6,11 +6,95 @@ date: "2025-03-10"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
+
+## c06 Data pulls
+
+```{r pull-census}
+## TASK: Load the census bureau data with the following tibble name.
+
+
+pop <- "./data/ACSDT5Y2018.B01003-Data.csv"
+pop_columns <- "./data/ACSDT5Y2018.B01003-Column-Metadata.csv"
+
+df_pop <- read_csv(pop, skip = 2, 
+                    na = "*****", 
+                    col_types = "ccd_d__", 
+                    col_names = c("id", 
+                                  "Geographic Area Name", 
+                                  "Estimate!!Total", 
+                                  "Margin of Error!!Total"))
+head(df_pop)
+```
+
+```{r find-NYT}
+## TASK: Find the URL for the NYT covid-19 county-level data
+url_counties <- "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"
+
+```
+
+```{r download-NYT}
+## NOTE: No need to change this; just execute
+## Set the filename of the data to download
+filename_nyt <- "./data/nyt_counties.csv"
+
+## Download the data locally
+curl::curl_download(
+        url_counties,
+        destfile = filename_nyt
+      )
+
+## Loads the downloaded csv
+df_covid <- read_csv(filename_nyt)
+head(df_covid)
+```
+
+### Clean & Filter data 
+
+```{r census-fips}
+## TASK: Create a `fips` column by extracting the county code
+df_q3 <- 
+  df_pop %>%
+  mutate(fips = str_extract(id, "[^US]*$")) %>%
+  select(-id) %>%
+  select(fips, 'Geographic Area Name', 'Estimate!!Total', 'Margin of Error!!Total')
+
+df_q3
+```
+
+```{r q4-task}
+## TASK: Join df_covid and df_q3 by fips.
+df_q4 <- left_join(df_covid, df_q3, by = "fips") # %>%
+  # filter(!is.na(fips)) #remove NYT data that is missing a fips code
+   
+```
+
+sort organized data
+
+```{r rename}
+## NOTE: No need to change; run this to produce a more convenient tibble
+df_data <-
+  df_q4 %>%
+  select(
+    date,
+    county,
+    state,
+    fips,
+    cases,
+    deaths,
+    population = `Estimate!!Total`
+  )
+
+```
+
+# A
 
 ## Covid Birth Comparison
 
-Pull CDC wonder data
+Pull CDC wonder data from here: <https://wonder.cdc.gov/natality-expanded-current.html>
+
+This code processes an excel file downloaded by using this tool to generate a list of birth rates grouped by county and month
 
 ```{r pull-births}
 # Load necessary library
@@ -19,19 +103,42 @@ birth <- "./data/covid_birth_data.xlsx"
 # Read the dataset
 df_births <- read_excel(birth, sheet = 1)
 
-# Remove rows where any column contains "Total"
+# 
 df_births_cleaned <- 
-  df_births[!apply(df, 1, function(row) any(grepl("Total", row, ignore.case = TRUE))), ]
-
+  #remove extra rows for computed totals
+  df_births[!apply(df_births, 1, function(row) any(grepl("Total", row, ignore.case = TRUE))), ] %>%
+  #simplify colnames for consistency
+  rename(fips = 'County of Residence Code') %>%
+  rename(births = Births) %>%
+  #encode date column as the 1st of the month following the end of the month eg January 2020 -> 2020-02-01
+  mutate(date = str_glue("{`Year Code`}-{`Month Code`}-01")) %>%
+  mutate(date = as.Date(date)) %>%
+  mutate(birth_date = date %m+% months(1)) %>%
+  mutate(sex_date = date %m-% months(9)) %>%
+  #pull only relevant data
+  select(fips, birth_date, sex_date, births)
+  
 # Display the filtered dataset
 head(df_births_cleaned)
 ```
 
-## Including Plots
+```{r join-all-data}
+df_covid_births <- left_join(df_covid, df_q3, by = "fips") # %>%
+  # filter(!is.na(fips)) #remove NYT data that is missing a fips code
+   
+```
+
+## Test Plots
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
+```{r birthgraph}
+df_births_cleaned %>%
+  ggplot(aes(x = sex_date, y = births, group = fips)) +
+  geom_line(alpha = 0.5) + 
+  geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dashed", color = "red")
+
+
 
 ```
 
