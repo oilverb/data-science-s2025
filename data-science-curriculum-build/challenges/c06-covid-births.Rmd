@@ -57,8 +57,9 @@ head(df_covid)
 df_q3 <- 
   df_pop %>%
   mutate(fips = str_extract(id, "[^US]*$")) %>%
+  separate(`Geographic Area Name`, into = c("county", "state"), sep = ", ", extra = "merge") %>%
   select(-id) %>%
-  select(fips, 'Geographic Area Name', 'Estimate!!Total', 'Margin of Error!!Total')
+  select(fips, county, state, 'Estimate!!Total', 'Margin of Error!!Total')
 
 df_q3
 ```
@@ -67,6 +68,8 @@ df_q3
 ## TASK: Join df_covid and df_q3 by fips.
 df_q4 <- left_join(df_covid, df_q3, by = "fips") # %>%
   # filter(!is.na(fips)) #remove NYT data that is missing a fips code
+
+head(df_q4)
    
 ```
 
@@ -141,7 +144,7 @@ df_covid_month <- df_covid %>%
     new_deaths = deaths - lag(deaths, default = 0) 
   ) %>%
   ## log only relevant data
-  select(fips, year_month, cases, new_cases,deaths, new_deaths) %>%  
+  select(fips, county, state, year_month, cases, new_cases,deaths, new_deaths) %>%  
   ungroup()
 
 head(df_covid_month)
@@ -152,25 +155,59 @@ head(df_covid_month)
 df_covid_births <- 
   df_births_cleaned %>%
   left_join(df_covid_month, by = c("fips","sex_date" = "year_month")) %>%
-  # rename(sex_date = year_month) %>%
-  left_join(df_q3, by = "fips") 
-  # filter(!is.na(fips)) #remove NYT data that is missing a fips code
+  left_join(df_q3, by = "fips") %>%
+  # filter(!is.na(fips)) %>% #remove NYT data that is missing a fips code
+  mutate(new_cases = ifelse(is.na(new_cases), 0, new_cases),
+         new_deaths = ifelse(is.na(new_deaths), 0, new_deaths)
+         ) %>%
+  select(fips, 
+         county = county.y,
+         state = state.y,
+         sex_date, 
+         sex = births, 
+         new_cases, 
+         new_deaths, 
+         population = `Estimate!!Total`)
+
    
 head(df_covid_births)
+```
+
+```{r normalize-covid-births}
+# df_cb_norm <-
+#   df_covid_births %>%
+#   mutate(births_norm = births/population,
+#          new_case_norm = new_cases/population,
+#          new_death_norm = new_deaths/population
+#          )
+# 
+# head(df_cb_norm)
+```
+
+```{r pivot-cb}
+df_cb_long <-
+  df_covid_births %>%
+  pivot_longer(cols = c(sex, new_cases, new_deaths), 
+               names_to = "type", 
+               values_to = "count")%>%
+  mutate(count_norm = count/population*100000)
+
+
+df_cb_long
 ```
 
 ## Test Plots
 
 You can also embed plots, for example:
 
-```{r birthgraph}
+```{r birthgraph initial}
 df_covid_births %>%
-  ggplot(aes(x = sex_date, y = births, group = fips)) +
+  ggplot(aes(x = sex_date, y = sex, group = fips)) +
   geom_line(alpha = 0.5) + 
   geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dashed", color = "red")
 
 df_covid_births %>%
-  ggplot(aes(x = sex_date, y = new_cases, group = fips)) +
+  ggplot(aes(x = sex_date, y = sex, group = fips)) +
   geom_line(alpha = 0.5) + 
   geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dashed", color = "red")
 
@@ -178,4 +215,257 @@ df_covid_births %>%
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r overlay-plot}
+df_cb_long %>%
+  ggplot(aes(x = sex_date, y = count, color = type, group = interaction(fips, type))) +
+  geom_line(alpha = 0.2) + 
+  # geom_smooth() +
+  geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dashed", color = "red") +
+  labs(title = "Overlay of Sex and New Cases Over Time",
+       x = "Sex Date",
+       y = "Count",
+       color = "Data Type") +
+  # scale_y_log10() +
+  scale_x_date(limits = c(as.Date("2020-01-01"), 
+                          as.Date("2022-09-01")
+                          )
+               ) +
+  facet_grid(type ~ ., scale = "free") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+```{r overlay-plot-norm}
+df_cb_long %>%
+  ggplot(aes(x = sex_date, y = count_norm, color = type, group = interaction(fips, type))) +
+  geom_line(alpha = 0.2) + 
+  geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dashed", color = "red") +
+  labs(title = "Overlay of Sex and New Cases Over Time",
+       x = "Sex Date",
+       y = "Count (normalized by population)",
+       color = "Data Type") +
+  # scale_y_log10() +
+  scale_x_date(limits = c(as.Date("2020-01-01"), 
+                          as.Date("2022-09-01")
+                          )
+               ) +
+  facet_grid(type ~ ., scale = "free")+
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+
+### Grouping by State
+
+```{r compare-state}
+df_cb_state <- 
+  df_cb_long %>%
+  group_by(state, sex_date, type) %>%
+  summarise(count = sum(count),
+            population = sum(population)) %>%
+  mutate(count_norm = count/population *100000) %>%
+   filter(!is.na(count_norm))
+  # mutate(type = factor(type, levels = c("sex", "new_cases", "new_deaths")))
+
+head(df_cb_state)
+
+
+df_cb_state %>%
+  ggplot(aes(x = sex_date, y = count, color = type, group = interaction(state, type))) +
+  geom_line(alpha = 0.2) + 
+  # geom_smooth() +
+  geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dashed", color = "red") +
+  labs(title = "Overlay of Sex and New Cases Over Time",
+       x = "Sex Date",
+       y = "Count",
+       color = "Data Type") +
+  # scale_y_log10() +
+  scale_x_date(limits = c(as.Date("2020-01-01"), 
+                          as.Date("2022-09-01")
+                          )
+               ) +
+  facet_grid(type ~ ., scale = "free")+
+  theme_minimal() +
+  theme(legend.position = "none")
+
+df_cb_state %>%
+  ggplot(aes(x = sex_date, y = count_norm, color = type, group = interaction(state, type))) +
+  geom_line(alpha = 0.2) + 
+  # geom_smooth() +
+  geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dashed", color = "red") +
+  labs(title = "Overlay of Sex and New Cases Over Time",
+       x = "Sex Date",
+       y = "Count",
+       color = "Data Type") +
+  # scale_y_log10() +
+  scale_x_date(limits = c(as.Date("2020-01-01"), 
+                          as.Date("2022-09-01")
+                          )
+               ) +
+  facet_grid(type ~ ., scale = "free")+
+  theme_minimal() +
+  theme(legend.position = "none")
+
+df_cb_state %>%
+  ggplot(aes(x = sex_date, y = count_norm, color = type, group = interaction(state))) +
+  geom_line(alpha = 0.2) + 
+  geom_smooth((aes(x = sex_date, y = count_norm, group = type))) +
+  geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dashed", color = "red") +
+  labs(title = "Overlay of Sex and New Cases Over Time",
+       x = "Sex Date",
+       y = "Count",
+       color = "Data Type") +
+  # scale_y_log10() +
+  scale_x_date(limits = c(as.Date("2020-01-01"), 
+                          as.Date("2022-09-01")
+                          )
+               ) +
+  facet_grid(type ~ ., scale = "free")+
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+```{r comparison-plot-final}
+peak_dates <-
+  data.frame(sex_date = as.Date(c("2020-04-01",
+                                  "2020-12-01",
+                                  "2022-02-01"
+                                  )
+                                )
+            ) %>%
+  expand_grid(type = unique(df_cb_state$type))
+
+peak_labels <- 
+  peak_dates %>%
+  filter(type == "new_cases")            
+
+##plotting
+df_cb_state %>%
+  ggplot(aes(x = sex_date, y = count_norm, color = type, group = state)) +
+  geom_line(alpha = 0.2) + 
+  geom_smooth((aes(x = sex_date, y = count_norm, group = type))) +
+  geom_vline(data = peak_dates, aes(xintercept = sex_date), 
+             linetype = "dashed", 
+             color = "red",
+             inherit.aes = FALSE) +
+  geom_text(data = peak_labels, 
+            aes(x = sex_date-50, y = 9000, label = format(sex_date, "%b %Y")),  
+            color = "Red", 
+            angle = 0, 
+            size = 3, 
+            inherit.aes = FALSE) +
+  # scale_y_log10() +
+  scale_x_date(limits = c(as.Date("2020-01-01"), 
+                          as.Date("2022-09-01")
+                          )
+               ) +
+  # scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  facet_grid(type ~ ., labeller = as_labeller(c("sex" = "Conceptions",
+                                                "new_cases" = "COVID Cases",
+                                                "new_deaths" = "COVID Deaths")
+                                              ),
+             scale = "free") +
+  labs(
+       x = "Date",
+       y = "Count, normalized per 100K",
+       color = "Data Type") +
+  theme_minimal() +
+  theme(legend.position = "none", 
+        clip = "off") 
+```
+
+```{r}
+
+```
+
+### Net Humans
+
+Recompute df for births not sex
+
+```{r true-birth-df}
+df_birth_death <- 
+  df_births_cleaned %>%
+  left_join(df_covid_month, by = c("fips","birth_date" = "year_month")) %>%
+  left_join(df_q3, by = "fips") %>%
+  # filter(!is.na(fips)) %>% #remove NYT data that is missing a fips code
+  mutate(new_cases = ifelse(is.na(new_cases), 0, new_cases),
+         new_deaths = ifelse(is.na(new_deaths), 0, new_deaths)
+         ) %>%
+  select(fips, 
+         county = county.y,
+         state = state.y,
+         birth_date, 
+         births, 
+         # new_cases, 
+         new_deaths, 
+         population = `Estimate!!Total`)
+
+df_bd_long <-
+  df_birth_death %>%
+  pivot_longer(cols = c(births, new_deaths), 
+               names_to = "type", 
+               values_to = "count")%>%
+  mutate(count_norm = count/population)
+
+
+df_bd_state <- 
+  df_bd_long %>%
+  group_by(state, birth_date, type) %>%
+  summarise(count = sum(count),
+            population = sum(population)) %>%
+  mutate(count_norm = count/population) 
+  # mutate(type = factor(type, levels = c("sex", "new_cases", "new_deaths")))
+
+head(df_cb_state)
+
+df_bd_all <- df_birth_death %>%
+  group_by(birth_date) %>%
+  summarise(
+    births = sum(births, na.rm = TRUE),
+    new_deaths = -sum(new_deaths, na.rm = TRUE),
+    population = sum(population, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    births_norm = births / population,
+    deaths_norm = new_deaths / population, 
+    pop_delta = births + new_deaths
+  )
+
+# Pivot data for plotting
+df_bd_all_long <- df_bd_all %>%
+  pivot_longer(cols = c(births, new_deaths, pop_delta),
+               names_to = "type",
+               values_to = "count") %>%
+  mutate(count_norm = count / population) 
+```
+
+```{r plot-birth-death}
+
+df_bd_all_long %>%
+  ggplot(aes(x = birth_date, y = count, color = type)) +
+  geom_line(linewidth = 1.2) + 
+  geom_vline(data = peak_dates, aes(xintercept = sex_date), 
+             linetype = "dashed", 
+             color = "red",
+             inherit.aes = FALSE) +
+  geom_text(data = peak_labels, 
+            aes(x = sex_date-60, y = -90000, label = format(sex_date, "%b %Y")),  
+            color = "Red", 
+            angle = 0, 
+            size = 3, 
+            inherit.aes = FALSE) +
+  scale_color_discrete(labels = c("births" = "Total Births", 
+                                  "new_deaths" = "COVID Deaths", 
+                                  "pop_delta" = "Net Delta")
+                       ) +
+  labs(
+    # title = "Births vs. Deaths During COVID",
+       x = "Date",
+       y = "Count",
+       color = "Data Type") +
+  scale_x_date(limits = c(as.Date("2020-01-01"), as.Date("2022-09-01"))) +
+  scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  theme_minimal() +
+   theme(legend.position = "bottom")
+```
