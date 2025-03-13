@@ -135,14 +135,15 @@ df_antibiotics_longer <-
     cols = penicillin:neomycin
   ) %>%
   mutate(mic_range = ifelse((mic < 20), "Low", "High")) %>%
-  mutate(mic_range = factor(mic_range, levels = c("Low", "High")))
+  mutate(mic_range = factor(mic_range, levels = c("Low", "High"))) %>%
+  mutate(bacteria = fct_reorder(bacteria, mic));
 
 df_antibiotics_longer
 ```
 
     ## # A tibble: 48 × 5
     ##    bacteria              gram     antibiotic       mic mic_range
-    ##    <chr>                 <chr>    <chr>          <dbl> <fct>    
+    ##    <fct>                 <chr>    <chr>          <dbl> <fct>    
     ##  1 Aerobacter aerogenes  negative penicillin   870     High     
     ##  2 Aerobacter aerogenes  negative streptomycin   1     Low      
     ##  3 Aerobacter aerogenes  negative neomycin       1.6   Low      
@@ -191,8 +192,6 @@ is Gram positive or negative.
 df_antibiotics_longer %>%
   ggplot(aes(x = bacteria, y = mic, fill = antibiotic)) +
   geom_col(position = "dodge") +
-  facet_wrap(~mic_range, scales = "free") +
-  
   #dummy data for legend
   geom_rect(aes(fill = gram), xmin = -1, xmax = 0, ymin = -1, ymax = 0) +
   
@@ -225,6 +224,7 @@ df_antibiotics_longer %>%
     breaks = c("penicillin", "streptomycin", "neomycin", "positive", "negative"),
     labels = c("Penicillin", "Streptomycin", "Neomycin", "Gram Positive", "Gram Negative")
   ) +
+  scale_y_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   labs(
     x = "Bacteria",
     y = "MIC Value",
@@ -300,6 +300,8 @@ df_antibiotics %>%
     color = "Penecillin MIC",
     shape = "Gram"
   ) +
+  scale_y_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  scale_x_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   #facet_wrap(~gram) +
   theme_minimal()
 ```
@@ -316,7 +318,8 @@ df_antibiotics %>%
     y = "Penecillin MIC",
     shape = "Gram"
   ) +
-  scale_y_log10() +
+  scale_y_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  scale_x_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   # facet_wrap(~gram) +
   theme_minimal()
 ```
@@ -333,7 +336,8 @@ df_antibiotics %>%
     y = "Penecillin MIC",
     shape = "Gram"
   ) +
-  scale_y_log10() +
+  scale_y_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  scale_x_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   theme_minimal()
 ```
 
@@ -395,7 +399,7 @@ df_antibiotic_eff
 
     ## # A tibble: 48 × 6
     ##    bacteria              gram     antibiotic       mic mic_range effective
-    ##    <chr>                 <chr>    <chr>          <dbl> <fct>     <chr>    
+    ##    <fct>                 <chr>    <chr>          <dbl> <fct>     <chr>    
     ##  1 Aerobacter aerogenes  negative penicillin   870     High      no       
     ##  2 Aerobacter aerogenes  negative streptomycin   1     Low       no       
     ##  3 Aerobacter aerogenes  negative neomycin       1.6   Low       no       
@@ -452,13 +456,10 @@ opportunity to think about why this is.**
     bacteria than gram negative. Far more negative bacteria have no
     antibiotic in this dataset that is effective against them
 
-    - Neomycin is the only antibioitic in the dataset that can be
-      considered effective against any gram-positive bacteria
-
   - Streptomycin is the least effective of the antibiotics, as far as
     number of bacteria it is effective against.
 
-    - However, it is more effective than penecillin at treating some
+    - However, it is more effective than penicillin at treating some
       bacteria. It isn’t always the least effective on every bacteria,
       it just doesn’t ever meet the 0.1 threshhold
 
