@@ -333,7 +333,9 @@ peak_dates <-
                                   )
                                 )
             ) %>%
-  expand_grid(type = unique(df_cb_state$type))
+  expand_grid(type = unique(df_cb_state$type)) %>%
+  filter(type!= "new_deaths")
+
 
 peak_labels <- 
   peak_dates %>%
@@ -341,6 +343,7 @@ peak_labels <-
 
 ##plotting
 df_cb_state %>%
+  filter(type!= "new_deaths") %>%
   ggplot(aes(x = sex_date, y = count_norm, color = type, group = state)) +
   geom_line(alpha = 0.2) + 
   geom_smooth((aes(x = sex_date, y = count_norm, group = type))) +
@@ -361,8 +364,9 @@ df_cb_state %>%
                ) +
   # scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   facet_grid(type ~ ., labeller = as_labeller(c("sex" = "Conceptions",
-                                                "new_cases" = "COVID Cases",
-                                                "new_deaths" = "COVID Deaths")
+                                                "new_cases" = "COVID Cases"
+                                                # "new_deaths" = "COVID Deaths"
+                                                )
                                               ),
              scale = "free") +
   labs(
@@ -442,6 +446,26 @@ df_bd_all_long <- df_bd_all %>%
 
 ```{r plot-birth-death}
 
+# Extract the first available births count (national level)
+first_birth_date <- min(df_bd_all_long$birth_date, na.rm = TRUE)
+
+first_birth_count <- df_bd_all_long %>%
+  filter(birth_date == first_birth_date, type == "births") %>%
+  pull(count)
+
+# Create a new dataframe for the declining line (1% per year decrease)
+decline_df <- data.frame(
+  birth_date = seq(from = as.Date("2020-01-01"), 
+                   to = as.Date("2023-01-01"), 
+                   by = "month")
+) %>%
+  mutate(
+    type = "Projected Decline",
+    count = 300000 * (0.98 ^ ((as.numeric(birth_date - first_birth_date) / 365)))  # 2% per year decline
+  )
+
+
+
 df_bd_all_long %>%
   ggplot(aes(x = birth_date, y = count, color = type)) +
   geom_line(linewidth = 1.2) + 
@@ -455,6 +479,7 @@ df_bd_all_long %>%
             angle = 0, 
             size = 3, 
             inherit.aes = FALSE) +
+  geom_line(data = decline_df, aes(x = birth_date, y = count)) +
   scale_color_discrete(labels = c("births" = "Total Births", 
                                   "new_deaths" = "COVID Deaths", 
                                   "pop_delta" = "Net Delta")
@@ -466,6 +491,42 @@ df_bd_all_long %>%
        color = "Data Type") +
   scale_x_date(limits = c(as.Date("2020-01-01"), as.Date("2022-09-01"))) +
   scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  theme_minimal() +
+   theme(legend.position = "bottom")
+```
+
+```{r}
+
+df_bd_all_long %>%
+  filter(type == "births") %>%
+  ggplot(aes(x = birth_date, y = count, color = type)) +
+  geom_line(linewidth = 1.2) + 
+  # geom_vline(data = peak_dates, aes(xintercept = sex_date), 
+  #            linetype = "dashed", 
+  #            color = "red",
+  #            inherit.aes = FALSE) +
+  # geom_text(data = peak_labels, 
+  #           aes(x = sex_date-60, y = -90000, label = format(sex_date, "%b %Y")),  
+  #           color = "Red", 
+  #           angle = 0, 
+  #           size = 3, 
+  #           inherit.aes = FALSE) +
+  geom_line(data = decline_df, aes(x = birth_date, y = count), line_width = 3) +
+  scale_color_discrete(labels = c("pop_delta" = "Net Population",
+                                  `Projected Decline` = "Projected Births (Pre-2019 trend)",
+                                  "births" = "Births")
+                       ) +
+  labs(
+    # title = "Births vs. Deaths During COVID",
+       x = "Date",
+       y = "Count",
+       color = "Data Type") +
+  
+  scale_x_date(limits = c(as.Date("2020-01-01"), as.Date("2022-09-01"))) +
+ 
+  scale_y_continuous(limits = c(200000, 350000),
+                     labels = scales::label_number(scale_cut = scales::cut_short_scale()))+
+  
   theme_minimal() +
    theme(legend.position = "bottom")
 ```
