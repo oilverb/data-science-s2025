@@ -293,6 +293,8 @@ Ideas:
     -   Tidy the other median columns to learn about other people groups.
     -   Tidy the percentage columns to learn about how many households of each category are in each county.
 -   Your own idea!
+    -   <https://www.al.com/news/2022/11/alabama-has-the-most-fast-food-restaurants-per-capita-research-finds.html>
+    -   
 
 # References
 

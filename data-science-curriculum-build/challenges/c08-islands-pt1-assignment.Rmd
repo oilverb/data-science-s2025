@@ -1,7 +1,7 @@
 ---
 title: "The Islands, Part 1: Design"
-author: "(Your name here)"
-date: 202X-XX-XX
+author: "Oliver Buchwald"
+date: 2025-04-03
 output:
   github_document:
     toc: true
@@ -28,7 +28,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
@@ -70,15 +70,15 @@ NB. When Zach counted the homes (on 2025-01-08), he found 20 unoccupied out of 5
 **Observations**:
 
 -   What is the total number of homes in Helvig?
-    -   (Your response here)
+    -   554
 -   What is the number of unoccupied homes? (*Hint*: This is not given anywhere. You will have to count them!)
-    -   (Your response here)
+    -   16
 -   What percent of homes are *occupied*?
-    -   (Your response here)
+    -   97.1%
 -   Are there any sources of *real* uncertainty in the percent occupied you calculated?
-    -   (Your response here)
+    -   Not really? If any residents have multiple homes that could be misleading though.
 -   Are there any sources of *erroneous* uncertainty in the percent occupied you calculated?
-    -   (Your response here)
+    -   I could have miscounted. Or there could be a big that causes a house that is not unoccupied to be grayed out.
 
 Zach looked at the first 25 homes in Helvig and recorded the `age` and `name` of every person in those homes. These people are provided in `helvig-seq.csv`.
 
@@ -86,6 +86,11 @@ Zach looked at the first 25 homes in Helvig and recorded the `age` and `name` of
 ## NOTE: Do not edit this
 df_sample_seq <- read_csv("./data/helvig-seq.csv")
 df_sample_seq 
+df_sample_seq
+```
+
+```{r}
+df_sample_seq
 ```
 
 You'll use this dataset as a starting point to figure out prevalent *last names* in Helvig.
@@ -102,7 +107,11 @@ Make sure to include in `df_q3` the counts as a column named `n`, and the preval
 ## TASK: Compute the prevalence and sort
 df_q3 <- 
   df_sample_seq %>% 
-## TODO: Complete this code
+  mutate(last = str_extract(name, "\\w+$")) %>%
+  count(last, name = "n") %>%
+  mutate(p = n / sum(n)) %>%
+  arrange(desc(p))
+
 
 df_q3
 ```
@@ -125,9 +134,9 @@ print("Very good!")
 *Observations*
 
 -   What last name is most prevalent in `df_sample_seq`?
-    -   (Your response here)
+    -   Sorensen
 -   Is this sample representative of *all* houses in Helvig? Why or why not?
-    -   (Your response here)
+    -   No, this dataset only represents the first 25 homes of several hundred.
 
 In the exercises, we talked about the importance of random sampling. In the previous challenge, we were able to *simulate* a random sample by running a few lines of code. But in the real world, we have to work harder to gather a random sample. We'll do this in two stages: *plan* then *collect*.
 
@@ -139,8 +148,8 @@ Complete the code below to draw a sample of size `n=25`. Replace `n_houses` with
 ## TASK: Set the parameters for this code block
 
 ## Select a random sample of houses
-# n_houses <- ??? # Total number of houses
-# n_sample <- ???  # Desired sample size
+n_houses <- 554 # Total number of houses
+n_sample <- 25  # Desired sample size
 
 set.seed(101)   # Set a seed for reproducibility
 
@@ -175,7 +184,7 @@ Gather the names of all people in the homes you listed in the previous exercise.
 
 ```{r}
 ## NOTE: Do not edit
-filename_random
+filename_random <- "./data/helvig-random.csv"
 ```
 
 Note that this points to the `data/` subdirectory in your `challenges` folder.
@@ -186,11 +195,14 @@ The following code will load your data.
 ## NOTE: Do not edit
 df_sample_random <- 
   read_csv(filename_random)
+
+df_sample_random
 ```
 
 Use the following to check your work.
 
-```{r q3-tests}
+```{r q5-tests}
+## ZDR this chunk was initially called r q3-tests and the duplicate label caused hella errors for me :'(
 ## NOTE: No need to change this
 # Check that the dataset has the correct column names
 assertthat::assert_that(setequal(
@@ -229,8 +241,8 @@ print("Great work!")
 *Observations*
 
 -   Which sample---sequential or random---is more *representative* of all homes Helvig? Why?
-    -   (Sequential or random?)
-    -   (Write your 'why' here.)
+    -   Neither? Both?
+    -    I don't think it fundamentally makes a difference how we chose the 25 houses. I bet you're going to tell me that's wrong, becuase of something to do with the random data selection and resmapling being more technically correct, but I don't believe you.
 
 ### **q6** Find common names: Random sample
 
@@ -248,9 +260,10 @@ df_sample_random %>%
 *Observations*
 
 -   Did you find any highly prevalent names using `df_sample_random` that you *didn't* find in q3 (using `df_sample_seq`)? Write them here.
-    -   (Your response here)
+    -   Collins is most prevalent here and not at all present in the sequential sample
+    -   Blomgren & Regan are other top contenders here, but were less prevalent in the initial dataset.
 -   Is there any reason that people with the same last name might tend to *live near each other*?
-    -   (Your response here)
+    -   They could be relatives who want to live close together. Or they could be two total strangers drawn together by their shared last name, creating an unbreakable bond of friendship. Or, they could be doing their part to make the yellow pages job easier and sorting themselves alphabetically by last name.
 
 You should have found some difference between the sequential and random samples. This is because we're only working with a *sample*---a limited number of observations from the entire population. We could go to every single house in Helvig and determine *exactly* how many people of each name there are (that's called a *census*), but the point of statistical inference is that we can make statements about a population using only a sample. What makes statistical inference powerful is that we can determine *how confident* we should be in our results, based on the size of our sample.
 
@@ -267,7 +280,9 @@ Complete the code below to write a helper function. Your function will compute t
 #  in an `estimate` column).
 name_prevalence <- function(df, last = "Collins") {
   df %>% 
-    ## TODO: Finish this code
+    filter(!is.na(name)) %>%
+    mutate(last_name = str_extract(name, "\\w+$")) %>%
+    summarise(estimate = mean(last_name == last)) %>%
     mutate(term = "prevalence")
 }
 ```
@@ -328,8 +343,8 @@ df_interval_bootstrap <-
     estimate = map(
       splits,
       function(split_df) {
-## TODO: Finish this code, using the name_prevalence() helper you implemented
-## HINT: Remember that you need to use analysis() when operating on split_df
+        analysis(split_df) %>%
+          name_prevalence(last = "Collins")
       }
     )
   ) %>% 
@@ -343,10 +358,10 @@ df_interval_bootstrap
 **Observations**:
 
 -   What is highest possible prevalence for your chosen name, based on the confidence interval you constructed?
-    -   (Your response here)
+    -   0.196
 -   Note that we used the *random* sample with the bootstrap procedure in this task. Could we use the bootstrap to make a confidence interval using the sequential sample (`df_sample_seq`) that would be representative of all of Helvig? Why or why not?
-    -   (Yes or no.)
-    -   (Write your 'why' here.)
+    -   Yes
+    -   I mean its super possible to run the same code on the first dataset. Conceivably it would be less accurate if the residents of Helvig sorted themselves into house numbers alphabetically by last name. But it kind of feels like the islands are randomly generated and the first 25 is as good a pattern as any.
 
 ### **q9** Discover possible measurements
 
@@ -354,9 +369,9 @@ Click on a single islander (you can do this from one of the houses), and take a 
 
 *Hint*: The videos from the [Visitor Center](https://islands.smp.uq.edu.au/visitors.php) will be especially helpful for getting some ideas.
 
--   (Possible measurement #1)
--   (Possible measurement #2)
--   (Possible measurement #3)
+-   Age of first friend
+-   Number of friend breakups
+-   Smoking status (there's some interesting day-day back and forth between light, moderate, and non-smoker for at least one person in the town, seems like they're going through something. Curious how common this is)
 
 ### **q10** Planning a study (TEAMWORK)
 
@@ -366,34 +381,34 @@ Challenge 10 will be a team assignment where you plan and execute a statistical 
 
 -   (What population are you going to study?)
     -   All of the Islanders? Only the residents of Helvig? Participants meeting certain criteria (in which case, you need to list *covariates*)?
+    -   All Single-resident households in Talu
 
 #### Quantity of interest
 
--   (Write your quantity of interest here)
+-   Age of first friend
 
 #### Covariates
 
--   (Write any relevant covariates here)
--   (There's probably more than one!)
+-   Do they have a pet
+-   Type of pet
+-   gender and gender of friend
 
 #### Observation or experiment?
 
 The Islands allows you to ask islanders to complete tasks. If you just take measurements on your participants, then it's an *observational study*. But if you also introduce something that's meant to change the outcome of a measurement (e.g., drinking coffee before taking a test), that's called an *experimental study*. You need to decide whether your study is observational or experimental.
 
--   (Observation or experiment?)
+-   Observation
 
 #### Question / Hypothesis
 
--   (Write your question / hypothesis here)
-    -   This could be an observational question, like "How are X and Y related in the population?"
-    -   This could be an experimental question, like "What effect does X have on Y in the population?"
+-   How does early-childhood social-ness impact pet ownership in Talu? I think that people who made their first friend later in life will be more likely to have a pet because it gives them the social fulfillment they missed out on at an early age
 
 #### Sampling plan
 
 -   (What steps will you take to collect the data?)
-    -   Be specific. For instance, if you're going to collect a random sample, how will you enumerate all of the things to be sampled?
-    -   Write a protocol. Document step-by-step instructions that your team will follow. That way, you can feasibly split up data collection among the whole team, while making sure each team member doesn't make ad hoc decisions that introduce bias into your results.
+    -   Click on each of the \~400 houses in Talu. Ignore houses with more than one member, as they will likely share a pet, making it difficult to distinguish who the pet truly belongs to
 -   (How will you ensure the data is representative of your chosen population?)
+    -   Full sampling of one city
 -   (For experiments only: How will you ensure any effects you observe are due to the treatment, and not due to other factors?)
 -   (How will you choose your sample size?)
-    -   This should be a mix of how confident you want to be in your results, and what is actually *feasible* for your research team.
+    -   By picking the smallest city, I think a full census is realistic, especially as we will only use data for one-person households. From my random sample that is like 1/5 houses, and sampling 15-20 people each seems reasonable.
