@@ -1,7 +1,7 @@
 ---
 title: "US Income"
-author: "(Your name here)"
-date: 202X-XX-XX
+author: "Oliver Buchwald"
+date: 2025-04-03
 output:
   github_document:
     toc: true
@@ -26,7 +26,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
@@ -52,8 +52,7 @@ library(tidyverse)
 
 ```{r q1-task}
 ## TODO: Give the filename for your copy of Table B01003
-filename_pop <- NA_character_
-
+filename_pop <- "./data/ACSDT5Y2018.B01003-Data.csv"
 ## NOTE: No need to edit
 df_pop <-
   read_csv(
@@ -82,7 +81,7 @@ This means that for cases listed as `*****` the US Census Bureau recommends trea
 
 ```{r q2-task}
 ## TODO: Give the filename for your copy of Table S1903
-filename_income <- NA_character_
+filename_income <- "./data/income.csv"
 
 ## NOTE: No need to edit
 df_income <-
@@ -121,7 +120,14 @@ df_q3 <-
     contains("median") & matches("\\d-person families") & !contains("Annotation of")
   ) %>%
   mutate(across(contains("median"), as.numeric)) %>%
-## TODO: Pivot the data, rename the columns
+  pivot_longer(
+    names_pattern = "(Estimate|Margin of Error).*(\\d-person families).*",
+    names_to = c(".value", "category"),
+    cols = matches("(Estimate|Margin of Error)")
+  ) %>%
+  rename("income_estimate" = "Estimate", 
+         "income_moe" = "Margin of Error", 
+         "geographic_area_name" = "Geographic Area Name") %>%
   glimpse()
 ```
 
@@ -152,7 +158,12 @@ $$\text{MOE} = 1.645 \times \text{SE}.$$
 
 ```{r q4-task}
 
-df_q4
+df_q4 <- 
+  df_q3 %>% 
+  mutate(income_SE = income_moe / 1.645,
+         income_CV = income_SE / income_estimate,
+         income_lo = income_estimate - 2.576 * income_SE,
+         income_hi = income_estimate + 2.576 * income_SE)
 ```
 
 Use the following tests to check your work:
@@ -206,8 +217,8 @@ One last wrangling step: We need to join the two datasets so we can compare popu
 
 ```{r q5-task}
 ## TODO: Join df_q4 and df_pop by the appropriate column
-
-df_data
+df_data <- 
+  left_join(df_pop, df_q4, by = "Geography")
 ```
 
 # Analysis
@@ -261,6 +272,14 @@ In the next task you'll investigate the relationship between population and unce
 *Hint*: Remember that standard error is a function of *both* variability (e.g. variance) and sample size.
 
 ```{r q7-task}
+
+df_data %>%
+  ggplot(aes(x = population_estimate, y = income_SE, color = category, group = 1)) +
+  geom_point(alpha = 0.1) +
+  theme_minimal() +
+  scale_y_log10() +
+  scale_x_log10() +
+  geom_smooth()
 ```
 
 **Observations**:
