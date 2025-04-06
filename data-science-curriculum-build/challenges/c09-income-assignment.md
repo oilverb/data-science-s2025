@@ -34,6 +34,16 @@ Oliver Buchwald
   - [**q8** Pose your own question about the data. Create a
     visualization (or table) here, and document your
     observations.](#q8-pose-your-own-question-about-the-data-create-a-visualization-or-table-here-and-document-your-observations)
+  - [Guiding Question: Why do some counties have higher income than
+    others? what are some characteristics of the highest-income
+    counties?](#guiding-question-why-do-some-counties-have-higher-income-than-others-what-are-some-characteristics-of-the-highest-income-counties)
+    - [My hypothesis: high income = high
+      elevation](#my-hypothesis-high-income--high-elevation)
+    - [**Observations:**](#observations)
+    - [**New hypothesis: What about the other kind of
+      high???**](#new-hypothesis-what-about-the-other-kind-of-high)
+    - [Observations](#observations-1)
+    - [Observations](#observations-2)
 - [References](#references)
 
 *Purpose*: We’ve been learning how to quantify uncertainty in estimates
@@ -459,14 +469,19 @@ df_data %>%
 **Observations**:
 
 - Document your observations here.
-  - (Your response here)
-  - (Your response here)
-  - …
+  - On average, smaller household sizes have a smaller margin of error
+  - Nantucket has a crazy wide income spread
+  - Generally 4-6 person households have higher income than 2-3 person
+    households, but income does not scale proportionally per person in
+    bigger households. Bigger households also tend to have wider error
+    bars
 - Can you confidently distinguish between household incomes in Suffolk
   county? Why or why not?
-  - (Your response here)
+  - Not really, the dots are very close together and within each others
+    error bars.
 - Which counties have the widest confidence intervals?
-  - (Your response here)
+  - Nantucket is crazy, as previously stated
+  - Hampshire, Dukes, and Berkshire are also pretty wide
 
 In the next task you’ll investigate the relationship between population
 and uncertainty.
@@ -507,10 +522,13 @@ df_data %>%
 
 - What *overall* trend do you see between `SE` and population? Why might
   this trend exist?
-  - (Your response here)
+  - low population = high standard error
+  - Likely due to there being less data points to average out and
+    therefore each individual datapoint having more of an influence on
+    the median/mean
 - What does this *overall* trend tell you about the relative ease of
   studying small vs large counties?
-  - (Your response here)
+  - Large counties are easier to estimate based on incomplete data
 
 # Going Further
 
@@ -521,7 +539,22 @@ States: Pose your own question and try to answer it with the data.
 
 ### **q8** Pose your own question about the data. Create a visualization (or table) here, and document your observations.
 
-Firstly, pretty plotting code
+Ideas:
+
+- Compare trends across counties that are relevant to you; e.g. places
+  you’ve lived, places you’ve been, places in the US that are
+  interesting to you.
+
+- In q3 we tidied the median `\\d-person families` columns only.
+
+  - Tidy the other median columns to learn about other people groups.
+  - Tidy the percentage columns to learn about how many households of
+    each category are in each county.
+
+- ## Your own idea!
+
+Firstly, theme template for prettier plots, since this is going into a
+presentation
 
 ``` r
 ## NOTE: No need to edit; feel free to re-use this code!
@@ -529,7 +562,7 @@ theme_common <- function() {
   theme_minimal() %+replace%
   theme(
     axis.text.x = element_text(size = 12),
-    axis.text.y = element_text(size = 12),
+    axis.text.y = element_text(size = 12, margin = margin(b = 10)),
     axis.title.x = element_text(margin = margin(4, 4, 4, 4), size = 16),
     axis.title.y = element_text(margin = margin(4, 4, 4, 4), size = 16, angle = 90),
 
@@ -546,7 +579,7 @@ theme_common <- function() {
     aspect.ratio = 5 / 7,
 
     plot.margin = unit(c(t = +0, b = +0, r = +0, l = +0), "cm"),
-    plot.title = element_text(size = 18, margin = margin(b = 10)),
+    plot.title = element_text(size = 18, margin = margin(l = 10)),
     plot.title.position = "plot",
     plot.subtitle = element_text(size = 16),
     plot.caption = element_text(size = 12),
@@ -557,10 +590,9 @@ theme_common <- function() {
 }
 ```
 
-What do some counties have higher income than others? what are some
-characteristics of the highest-income counties?
+## Guiding Question: Why do some counties have higher income than others? what are some characteristics of the highest-income counties?
 
-My hypothesis: high income = high elevation
+### My hypothesis: high income = high elevation
 
 Additional data is sourced from USGS DEM data for elevation, and
 formatted by this dude on reddit into an excel sheet
@@ -591,40 +623,73 @@ df_elevation <-
 df_elevation %>%
   ggplot(aes(x = normalized_income_estimate)) +
   # geom_histogram(bins = 50, fill = "#136621ff") +
-  geom_density(color = "#00a724ff", linewidth = 1.25) +
-  # geom_boxplot() +
+  geom_density(color = "#136621ff", linewidth = 1.25) +
+  geom_boxplot(aes( y = 0.00003), width = 0.000005) +
   labs(title = "Density of Income, by County",
        x = "Median Income per Capita",
        y = "Density") +
+  scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   theme_common()
 ```
 
 ![](c09-income-assignment_files/figure-gfm/q8-background-1.png)<!-- -->
 
 ``` r
-#county income variation
+#histogram of county income
 df_elevation %>%
   ggplot(aes(x = normalized_income_estimate)) +
-  geom_histogram(bins = 50, fill = "#136621ff", color = "white") +
-  #geom_density(color = "#00a724ff", linewidth = 1.25) +
-  # geom_boxplot() +
+  geom_histogram(bins = 50, 
+                 fill = "#136621ff", 
+                 color = "white", 
+                 width = 0.9) +
+  geom_boxplot(aes( y = 310), width = 20, color = "#136621ff", outlier.size= 0.1) +
   labs(title = " Median Income, by County",
        x = "Median Income per Capita",
        y = "Frequency") +
+  scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   theme_common()
 ```
 
 ![](c09-income-assignment_files/figure-gfm/q8-background-2.png)<!-- -->
 
 ``` r
+#numerical summary
+
+df_elevation %>%
+  summarise(
+    median = median(normalized_income_estimate),
+    q1 = quantile(normalized_income_estimate, 0.25),
+    q3 = quantile(normalized_income_estimate, 0.75),
+    iqr = q3 - q1,
+    upper_bound = q3 + 1.5 * iqr
+  )
+```
+
+    ## # A tibble: 1 × 5
+    ##   median     q1     q3    iqr upper_bound
+    ##    <dbl>  <dbl>  <dbl>  <dbl>       <dbl>
+    ## 1 69436. 59271. 80572. 21302.     112525.
+
+**Observations**:
+
+- Wow, there are counties
+- Wow, they have incomes
+- Median income is around 69K and the IQR ranges from ~59-81k
+- Anything above **112k** is an outlier based on the boxplot. I’m using
+  this number as a reference point for what counts as high income in
+  later sections
+
+``` r
 #income v elevation with std deviation
 
 df_elevation %>%
   ggplot(aes(x = normalized_income_estimate, y = MEDIAN, size = STD)) +
-  geom_point(alpha = 0.2, color = "#00a724ff") +
+  geom_point(alpha = 0.2, color = "#136621ff") +
   labs(title = "Income vs Elevation, By County",
        x = "Median Income Per Capita",
        y = "Median Elevation") +
+  scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   theme_common()
 ```
 
@@ -635,41 +700,45 @@ df_elevation %>%
 df_elevation %>%
   ggplot(aes(x = normalized_income_estimate, y = MEDIAN)) +
   geom_errorbar(aes(ymin = MIN, ymax = MAX), width = 0, color = "#00a724ff", alpha = 0.2) +  # vertical error bars
-  geom_point(alpha = 0.3, size = 1, color = "#136621ff") +
+  geom_point(alpha = 0.4, size = 1, color = "#136621ff") +
   labs(title = "Income vs Elevation",
        x = "Median Income Per Capita",
        y = "Median Elevation") +
+  scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   theme_common()
 ```
 
 ![](c09-income-assignment_files/figure-gfm/q8-elevation-2.png)<!-- -->
 
 ``` r
-# high income vs max elevation
+# income vs max elevation
 
 df_elevation %>%
   # filter(normalized_income_estimate >= quantile(normalized_income_estimate, 0.75, na.rm = TRUE)) %>%
   ggplot(aes(x = normalized_income_estimate, y = MAX)) +
-  geom_point(alpha = 0.5, color = "#00a724ff") +
+  geom_point(alpha = 0.4, color = "#136621ff") +
   labs(title = "Income vs Max Elevation, By County",
        x = "Median Income Per Capita",
        y = "MAX Elevation") +
+  scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   theme_common()
 ```
 
 ![](c09-income-assignment_files/figure-gfm/q8-elevation-3.png)<!-- -->
 
 ``` r
-# high income vs max elevation
+# income vs MIN elevation
 
 df_elevation %>%
   # filter(normalized_income_estimate >= quantile(normalized_income_estimate, 0.75, na.rm = TRUE)) %>%
-  ggplot(aes(x = normalized_income_estimate, y = MIN)) +
-  geom_point(alpha = 0.5, color = "#00a724ff") +
-  labs(title = "Income vs MIN Elevation, By County",
-       x = "Median Income Per Capita",
-       y = "MIN Elevation") +
-  theme_minimal()
+  ggplot(aes(y = normalized_income_estimate, x = MIN)) +
+  geom_point(alpha = 0.4, color = "#136621ff") +
+  labs(#title = "Lowest Elevation vs Income, By County",
+       y = "Median Income Per Capita ($)",
+       x = "MIN Elevation (feet)") +
+  scale_y_continuous(limits= c(0,210000),
+    labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  theme_common()
 ```
 
 ![](c09-income-assignment_files/figure-gfm/q8-elevation-4.png)<!-- -->
@@ -680,10 +749,11 @@ df_elevation %>%
 df_elevation %>%
   filter(normalized_income_estimate <= quantile(normalized_income_estimate, 0.25, na.rm = TRUE)) %>%
   ggplot(aes(x = normalized_income_estimate, y = MAX)) +
-  geom_point(alpha = 0.5, color = "#00a724ff") +
-  labs(title = "Income vs  Elevation, By County",
+  geom_point(alpha = 0.4, color = "#136621ff") +
+  labs(title = "Income vs  Elevation, By County, lower 25th percentile",
        x = "Median Income Per Capita",
        y = "MIN Elevation") +
+  scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
   theme_common()
 ```
 
@@ -706,7 +776,67 @@ df_elevation %>%
   mountains (or are likely skewed by a higher concentration of cities on
   the coastlines)
 
-But what about the other kind of high???
+``` r
+df_elevation_moe <-
+  df_elevation %>%
+  mutate(income_SE = normalized_income_moe / 1.645,
+         income_CV = income_SE / normalized_income_estimate,
+         income_lo = normalized_income_estimate - 2.576 * income_SE,
+         income_hi = normalized_income_estimate + 2.576 * income_SE,
+         elevation_SE = STD/sqrt(COUNT),
+         elevation_CV = elevation_SE/MEAN,
+         elevation_lo = MEAN - 2.576 * elevation_SE,
+         elevation_hi = MEAN + 2.576 * elevation_SE,
+         elevation = MEAN)
+
+# income vs elevation with MOE
+df_elevation_moe %>%
+  ggplot(aes(y = normalized_income_estimate, x = MEDIAN)) +
+  # geom_errorbarh(aes(xmin = MIN, xmax = MAX), color = "#00a724ff", alpha = 0.05) +  
+  
+  geom_hline(yintercept = 69435, color="#136621ff", linewidth = 1.4) +
+  geom_errorbar(aes(ymin= pmax(income_lo, 0), ymax= pmin(income_hi,290000)), color = "#00a724ff", alpha = 0.10) +
+  geom_point(alpha = 0.4, size = 1, color = "#136621ff") +
+  labs(title = "Income vs Elevation, by County",
+       y="Income ($ per Capita)",
+       x= "Median Elevation (Feet)") +
+  # scale_x_continuous(limits = c(0,250000)) +
+  scale_y_continuous(limits = c(0,290000),
+                      labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  
+  geom_hline(yintercept = 69435, color="white", linewidth = 0.5) +
+  theme_common()
+```
+
+![](c09-income-assignment_files/figure-gfm/elevation-error-1.png)<!-- -->
+
+### **Observations:**
+
+- Tried remaking those plots with various error bars based on all the
+  stuff in the first half of the assigment. IMO its more info than we
+  need or want and makes the graph ugly
+- This graph shows no trends. At higher elevations, one could argue that
+  income is closer to the median and at least the 1.5x IQR. But it
+  really follows the overall trend and there is nothing here - the error
+  bars just drive that point home
+- However - the handful of richest counties being at lower elevations
+  generally does kind of hold true here. idk, I think this avenue of
+  investigation was kind of a bust, but i stand by the minimum elevation
+  plot from earlier having some merit.
+- Also, varying whether x on this plot is median, min or max gets some
+  interesting data, I don’t want to make this file any longer, but
+  setting it to MAX elevation almost suggests that income in counties at
+  high elevation is a bit more skewed than the US as a whole, so at high
+  elevation counties are more likely to have slighlty above-median
+  incomes
+- I almost want to make another plot where counties are bucketed by 1000
+  ft intervals and its a boxplot for each elevation tier. But tbh there
+  is no trend, I’m just looking to prove a hypothesis that doesn’t make
+  sense
+
+**Maybe we’re on the wrong track**
+
+### **New hypothesis: What about the other kind of high???**
 
 For this, we pulled additional data from the California department of
 tax & fee administration regarding cannabis sales by county.
@@ -734,77 +864,124 @@ df_high <-
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-df_high
-```
-
-    ## # A tibble: 47 × 20
-    ##     FIPS normalized_income_est…¹ normalized_income_moe population_estimate NAME 
-    ##    <dbl>                   <dbl>                 <dbl>               <dbl> <chr>
-    ##  1  6001                 117425.                 3974.             1643700 Alam…
-    ##  2  6005                  77388.                25202.               37829 Amad…
-    ##  3  6007                  68811.                 8519.              227075 Butte
-    ##  4  6009                  80998.                37801.               45235 Cala…
-    ##  5  6013                 113215.                 5335.             1133247 Cont…
-    ##  6  6015                  59544.                10706.               27424 Del …
-    ##  7  6017                 124658.                19330.              186661 El D…
-    ##  8  6019                  57735.                 2711.              978130 Fres…
-    ##  9  6023                  61214.                11757.              135768 Humb…
-    ## 10  6025                  60251.                 7068.              180216 Impe…
-    ## # ℹ 37 more rows
-    ## # ℹ abbreviated name: ¹​normalized_income_estimate
-    ## # ℹ 15 more variables: STATE_NAME <chr>, COUNT <dbl>, AREA <dbl>, MIN <dbl>,
-    ## #   MAX <dbl>, RANGE <dbl>, MEAN <dbl>, STD <dbl>, SUM <dbl>, VARIETY <dbl>,
-    ## #   MAJORITY <dbl>, MINORITY <dbl>, MEDIAN <dbl>, `Per Capita Sales` <dbl>,
-    ## #   `Total Taxable Sales` <dbl>
-
-``` r
-#initial comparison
 df_high %>%
-  ggplot(aes(x = normalized_income_estimate, y = `Per Capita Sales`)) +
-  # geom_smooth(color = "#004d00", fill = "#ccffcc") +
+  ggplot(aes(x = `Total Taxable Sales`, y = `Per Capita Sales`)) +
   geom_point(size = 1, color = "#136621ff") +
-  geom_boxplot(aes(x = normalized_income_estimate, y = -20), 
-    width = 10, 
-    # fill = "#ccffcc", 
-    color = "#136621ff",
-    alpha = 0.5) +
-  labs(title = "Annual Income vs Cannabis Spending",
-       x = "Median Income ($)",
-       y = "Cannabis Sales ($)") +
+  labs(title = "Cannabis Sales by County (CA)",
+       x = "Total Sales",
+       y = "Sales per Capita") +
   theme_common()
 ```
 
 ![](c09-income-assignment_files/figure-gfm/q8-cannabis-1.png)<!-- -->
 
 ``` r
+#another plot of raw data
+df_high %>%
+  ggplot(aes(x = population_estimate, y = `Total Taxable Sales`)) +
+  geom_point(size = 1.5, color = "#136621ff", alpha = 0.8) +
+  labs(title = "Population vs Cannabis Sales by County (CA)",
+       x = "Population",
+       y = " Annual Cannabis Sales ($)") +
+   scale_x_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+   scale_y_log10(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  theme_common()
+```
+
+![](c09-income-assignment_files/figure-gfm/q8-cannabis-2.png)<!-- -->
+
+### Observations
+
+- Population and cannabis sales have a fairly direct relationship and we
+  should normalize them. This graph is really just for the slideshow
+
+``` r
+#initial comparison
+df_high %>%
+  ggplot(aes(x = normalized_income_estimate, y = `Per Capita Sales`)) +
+  geom_smooth(data = . %>%filter(`Per Capita Sales` > 10),
+              aes(x = normalized_income_estimate, y = `Per Capita Sales`),
+              color = "#004d00", 
+              fill = "#ccffcc"
+              ) +
+  geom_point(size = 1.5, color = "#136621ff") +
+  # 
+  # geom_boxplot(aes(x = normalized_income_estimate, y = -20), 
+  #   width = 10, 
+  #   color = "#136621ff",
+  #   alpha = 0.5) +
+  # geom_boxplot(aes(y = `Per Capita Sales`, x = 40000), 
+  #   width = 10000, 
+  #   color = "#136621ff",
+  #   alpha = 0.5) +
+  labs(title = "Annual Income vs Cannabis Spending, Per Cap",
+       x = "Median Income ($)",
+       y = "Cannabis Sales ($)") +
+  theme_common()
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+
+![](c09-income-assignment_files/figure-gfm/q8-high-high-high-1.png)<!-- -->
+
+``` r
+#this is bad I know
+df_high %>%
+  ggplot(aes(x = normalized_income_estimate, y = `Total Taxable Sales`)) +
+  geom_point(size = 1, color = "#136621ff") +
+   
+  labs(title = "Annual Income vs Total Cannabis Spending",
+       x = "Median Income ($)",
+       y = "Cannabis Sales ($)") +
+  theme_common()
+```
+
+![](c09-income-assignment_files/figure-gfm/q8-high-high-high-2.png)<!-- -->
+
+``` r
 #conclusion, does high = high?
 df_high %>%
   ggplot(aes(x = MEDIAN, y = `Per Capita Sales`)) +
-  geom_smooth(color = "#004d00", fill = "#ccffcc") +
-  geom_point(size = 1, color = "#136621ff") +
-  labs(title = "Elevation vs Cannabis Sales",
-       x = "Median Elevation",
+  geom_smooth(data = . %>%filter(`Per Capita Sales` > 10),
+              aes(x = MEDIAN, y = `Per Capita Sales`),
+              color = "black", 
+              fill = "#ccffcc"
+              ) +
+  geom_point(size = 1.5, color = "#136621ff") +
+  geom_point(data = . %>%filter(`Per Capita Sales` < 10),
+             aes(x = MEDIAN, y = `Per Capita Sales`),
+             size = 1, 
+             color = "white",
+             alpha = 0.5
+             ) +
+  labs(title = "Cannabis Sales vs Elevation",
+       x = "Median Elevation (feet)",
        y = "Per Capita Sales ($/year)") +
   theme_common()
 ```
 
     ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 
-![](c09-income-assignment_files/figure-gfm/q8-cannabis-2.png)<!-- -->
+![](c09-income-assignment_files/figure-gfm/q8-high-high-high-3.png)<!-- -->
 
-Ideas:
+### Observations
 
-- Compare trends across counties that are relevant to you; e.g. places
-  you’ve lived, places you’ve been, places in the US that are
-  interesting to you.
+- Spending on weed is highest in counties within the IQR for income.
+  Many of the lowest sales are also in this range, in some part due to a
+  county with no dispensary which is dragging down the geom_smooth.
 
-- In q3 we tidied the median `\\d-person families` columns only.
+- Counties with higher income (\>125000) generally spend less on weed
+  per capita
 
-  - Tidy the other median columns to learn about other people groups.
-  - Tidy the percentage columns to learn about how many households of
-    each category are in each county.
+- high income != high weed
 
-- ## Your own idea!
+- However, high elevation == high sales per capita
+
+- An interesting note is that at least the counties with the three
+  lowest sales per capita have county-level bans on cannabis production
+  and consumption outside of municipalities where it is otherwise
+  legalized. I believe that investigating county-level restrictions will
+  get better results, but tbh I’m tired and done for the day
 
 # References
 
