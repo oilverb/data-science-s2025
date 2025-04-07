@@ -899,11 +899,11 @@ df_high %>%
 #initial comparison
 df_high %>%
   ggplot(aes(x = normalized_income_estimate, y = `Per Capita Sales`)) +
-  geom_smooth(data = . %>%filter(`Per Capita Sales` > 10),
-              aes(x = normalized_income_estimate, y = `Per Capita Sales`),
-              color = "#004d00", 
-              fill = "#ccffcc"
-              ) +
+  # geom_smooth(data = . %>%filter(`Per Capita Sales` > 10),
+  #             aes(x = normalized_income_estimate, y = `Per Capita Sales`),
+  #             color = "#004d00", 
+  #             fill = "#ccffcc"
+  #             ) +
   geom_point(size = 1.5, color = "#136621ff") +
   # 
   # geom_boxplot(aes(x = normalized_income_estimate, y = -20), 
@@ -919,8 +919,6 @@ df_high %>%
        y = "Cannabis Sales ($)") +
   theme_common()
 ```
-
-    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 
 ![](c09-income-assignment_files/figure-gfm/q8-high-high-high-1.png)<!-- -->
 
@@ -982,6 +980,9 @@ df_high %>%
   and consumption outside of municipalities where it is otherwise
   legalized. I believe that investigating county-level restrictions will
   get better results, but tbh I’m tired and done for the day
+
+TBH, these slides are probably a better context for my observations:
+<https://docs.google.com/presentation/d/1uS7NTo1STrLGv7iQE-cT0DgB6eobSHu7rohDxekZue4/edit?usp=sharing>
 
 # References
 
