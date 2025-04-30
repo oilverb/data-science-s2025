@@ -130,8 +130,13 @@ you still need to count, because your numbers *will* be different!
   - 97.1%
 - Are there any sources of *real* uncertainty in the percent occupied
   you calculated?
-  - Not really? If any residents have multiple homes that could be
-    misleading though.
+  - To quote a great man “The Islands is an *incredibly* detailed
+    simulation of a real population. Islanders are born, die, and move
+    around.”
+  - Since the population of Islanders changes, there is uncertainty. At
+    the time I thought that there wasn’t uncertainty in that moment
+    because I just counted, but looking back now it could have (and
+    probably did) changed. So the uncertainty is time-based
 - Are there any sources of *erroneous* uncertainty in the percent
   occupied you calculated?
   - I could have miscounted. Or there could be a big that causes a house
@@ -447,11 +452,11 @@ print("Great work!")
 
 - Which sample—sequential or random—is more *representative* of all
   homes Helvig? Why?
-  - Neither? Both?
-  - I don’t think it fundamentally makes a difference how we chose the
-    25 houses. I bet you’re going to tell me that’s wrong, becuase of
-    something to do with the random data selection and resmapling being
-    more technically correct, but I don’t believe you.
+  - Random sample
+  - Generally speaking, a sequential sample is typically going to follow
+    trends based on neighborhoods and bias of people living close to
+    people they are similar to. A random sample will have less of an
+    influence based on that.
 
 ### **q6** Find common names: Random sample
 
@@ -630,12 +635,10 @@ df_interval_bootstrap
   this task. Could we use the bootstrap to make a confidence interval
   using the sequential sample (`df_sample_seq`) that would be
   representative of all of Helvig? Why or why not?
-  - Yes
-  - I mean its super possible to run the same code on the first dataset.
-    Conceivably it would be less accurate if the residents of Helvig
-    sorted themselves into house numbers alphabetically by last name.
-    But it kind of feels like the islands are randomly generated and the
-    first 25 is as good a pattern as any.
+  - No
+  - Since a sequential sample is not random bootstrapping can’t help it.
+    Bootstrapping won’t do anything if you don’t have representative
+    data to bootstrap in the first place
 
 ### **q9** Discover possible measurements
 
