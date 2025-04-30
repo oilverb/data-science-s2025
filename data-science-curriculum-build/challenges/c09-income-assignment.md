@@ -416,7 +416,7 @@ compare population with income.
 ``` r
 ## TODO: Join df_q4 and df_pop by the appropriate column
 df_data <- 
-  left_join(df_pop, df_q4, by = "Geography")
+  left_join(df_q4, df_pop, by = "Geography")
 ```
 
 # Analysis
@@ -523,9 +523,12 @@ df_data %>%
 - What *overall* trend do you see between `SE` and population? Why might
   this trend exist?
   - low population = high standard error
-  - Likely due to there being less data points to average out and
-    therefore each individual datapoint having more of an influence on
-    the median/mean
+  - At a low population, there are more likely to be fewer samples -
+    this may happen if data collection is proportional to population, or
+    collected in a way that is tied to population.
+  - Fewer samples means that there are less data points to average out
+    and therefore each individual datapoint having more of an influence
+    on the median/mean
 - What does this *overall* trend tell you about the relative ease of
   studying small vs large counties?
   - Large counties are easier to estimate based on incomplete data
