@@ -720,26 +720,26 @@ you found in q6. Note any observations.
 df_top10_cases <- 
   df_normalized %>% 
   group_by(county) %>% 
-  summarise(across(c(state, population, cases_per100k, deaths_per100k), max)) %>% 
+  summarise(across(c(state, population, cases_per100k, deaths_per100k, date), max)) %>% 
   arrange(desc(cases_per100k)) %>% 
   slice(0:10)
 
 df_top10_cases
 ```
 
-    ## # A tibble: 10 × 5
-    ##    county                   state        population cases_per100k deaths_per100k
-    ##    <chr>                    <chr>             <dbl>         <dbl>          <dbl>
-    ##  1 Loving                   Texas               102       192157.          980. 
-    ##  2 Chattahoochee            Georgia           10767        69527.          204. 
-    ##  3 Nome Census Area         Alaska             9925        62922.           50.4
-    ##  4 Northwest Arctic Borough Alaska             7734        62542.          168. 
-    ##  5 Crowley                  Colorado           5630        59449.          533. 
-    ##  6 Bethel Census Area       Alaska            18040        57439.          227. 
-    ##  7 Dewey                    South Dakota       5779        54317.          761. 
-    ##  8 Dimmit                   Texas             10663        54019.          478. 
-    ##  9 Jim Hogg                 Texas              5282        50133.          417. 
-    ## 10 Kusilvak Census Area     Alaska             8198        49817.          171.
+    ## # A tibble: 10 × 6
+    ##    county               state population cases_per100k deaths_per100k date      
+    ##    <chr>                <chr>      <dbl>         <dbl>          <dbl> <date>    
+    ##  1 Loving               Texas        102       192157.          980.  2022-05-13
+    ##  2 Chattahoochee        Geor…      10767        69527.          204.  2022-05-13
+    ##  3 Nome Census Area     Alas…       9925        62922.           50.4 2022-05-13
+    ##  4 Northwest Arctic Bo… Alas…       7734        62542.          168.  2022-05-13
+    ##  5 Crowley              Colo…       5630        59449.          533.  2022-05-13
+    ##  6 Bethel Census Area   Alas…      18040        57439.          227.  2022-05-13
+    ##  7 Dewey                Sout…       5779        54317.          761.  2022-05-13
+    ##  8 Dimmit               Texas      10663        54019.          478.  2022-05-13
+    ##  9 Jim Hogg             Texas       5282        50133.          417.  2022-05-13
+    ## 10 Kusilvak Census Area Alas…       8198        49817.          171.  2022-05-13
 
 ``` r
 ## TASK: Find the top 10 deaths_per100k counties; report populations as well

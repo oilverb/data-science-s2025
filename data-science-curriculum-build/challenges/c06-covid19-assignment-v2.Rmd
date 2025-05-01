@@ -24,7 +24,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
@@ -388,7 +388,7 @@ Find the top 10 counties in terms of `cases_per100k`, and the top 10 in terms of
 df_top10_cases <- 
   df_normalized %>% 
   group_by(county) %>% 
-  summarise(across(c(state, population, cases_per100k, deaths_per100k), max)) %>% 
+  summarise(across(c(state, population, cases_per100k, deaths_per100k, date), max)) %>% 
   arrange(desc(cases_per100k)) %>% 
   slice(0:10)
 
@@ -437,6 +437,19 @@ df_normalized %>%
              alpha = 0.7 )
 ```
 
+```{r q7-viz-when}
+df_normalized %>%
+  filter(county == "Loving", state == "Texas") %>%
+  ggplot(aes(x = date, y = cases)) +
+  geom_line() +
+  labs(
+    title = "COVID-19 Case Count Over Time in Loving County, TX",
+    x = "Date",
+    y = "Cumulative Case Count"
+  ) +
+  theme_minimal()
+```
+
 **Observations**:
 
 -   A majority of the top 10 counties for normalized case count were in either Alaska or Texas
@@ -445,7 +458,7 @@ df_normalized %>%
     -   Adding the geom_point for the entire dataset disproved that general hypothesis across the data as a whole - It just happens that the upper outlier at each end corresponds to a reverse linear relationship, and the majority of the data shows the opposite trend (more cases -\> more deaths, generally)
     -   Using normalized data for this plot feels inherently misleading - I believe net case count to normalized death count would be the correct plot to use to draw the conclusion about low testing rate. I'm investigating this more later
 -   When did these "largest values" occur?
-    -   Loving, TX is an outlier for high case count in both departments.
+    -   Loving, TX is an outlier for high case count in both departments. it's highest case count is at the latest date in the set- near April of 2022. Crazy how the number of cases increases, with time, we're counting a total of caees and not a current value. Something to account for ig
     -   All of the counties with a top 10 case count have a population of \<20k. This is small on the order of all counties in the US. All of the counties with a top 10 death count have a population of under 80k, which is still generally small-medium sized.
 
 ## Self-directed EDA
