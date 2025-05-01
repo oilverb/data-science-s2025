@@ -24,7 +24,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
@@ -189,10 +189,11 @@ print("Your assertions passed, but make sure they're checking the right thing!")
 *Observations*
 
 -   You chose a correct value of `stat(x, y)` when `x, y` is *outside* the circle. Why did you choose this value?
-    -   1,1 is on the outside margin of the circle
+    -   1,1 is on the outside margin of the circle - this means that stat(x, y) returns 0. This means that points outside the circle won't impact our estimation
 -   You chose a correct value of `stat(x, y)` when `x, y` is *inside* the circle. Why did you choose this value?
     -   0.5, 0.5 is comfortably inside the circle. Its a nice round even number
     -   I also tried 0,1, which my code reads as inside the circle just to confirm the \<= was working as intended.
+    -   For these values stat(x, y) returns 4, based on the equation above in the background section. Since the area of a quarter circle is pi/4 we have to multiple by 4 in order to get areas.
 
 ### **q3** Estimate $\pi$
 
@@ -263,7 +264,7 @@ df_q4 %>%
 *Observations*
 
 -   What is a range of plausible values, based on the sampling distribution you've generated?
-    -   Pi is likely somewhere between 3.1 and 3.15. Its almost definitely more than 3 and less than 3.25. As I submit the assignment, I'm realizing the random values change every time I knit, but that range seems pretty inclusive.
+    -   Pi is likely somewhere between 3.1 and 3.18. Its almost definitely more than 3 and less than 3.25. As I submit the assignment, I'm realizing the random values change every time I knit, but that range seems pretty inclusive.
 
 ### **q5** Bootstrap percentile confidence interval
 

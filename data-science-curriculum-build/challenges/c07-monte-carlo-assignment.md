@@ -206,16 +206,16 @@ df_q1
     ## # A tibble: 5,000 × 2
     ##         x      y
     ##     <dbl>  <dbl>
-    ##  1 0.0198 0.237 
-    ##  2 0.635  0.248 
-    ##  3 0.615  0.297 
-    ##  4 0.173  0.602 
-    ##  5 0.786  0.880 
-    ##  6 0.670  0.0520
-    ##  7 0.147  0.757 
-    ##  8 0.861  0.973 
-    ##  9 0.0819 0.854 
-    ## 10 0.496  0.651 
+    ##  1 0.385  0.660 
+    ##  2 0.164  0.880 
+    ##  3 0.699  0.747 
+    ##  4 0.933  0.268 
+    ##  5 0.847  0.0611
+    ##  6 0.373  0.155 
+    ##  7 0.546  0.226 
+    ##  8 0.0787 0.189 
+    ##  9 0.505  0.305 
+    ## 10 0.395  0.284 
     ## # ℹ 4,990 more rows
 
 Use the following to check that you’ve used the correct variable names.
@@ -313,13 +313,18 @@ print("Your assertions passed, but make sure they're checking the right thing!")
 
 - You chose a correct value of `stat(x, y)` when `x, y` is *outside* the
   circle. Why did you choose this value?
-  - 1,1 is on the outside margin of the circle
+  - 1,1 is on the outside margin of the circle - this means that
+    stat(x, y) returns 0. This means that points outside the circle
+    won’t impact our estimation
 - You chose a correct value of `stat(x, y)` when `x, y` is *inside* the
   circle. Why did you choose this value?
   - 0.5, 0.5 is comfortably inside the circle. Its a nice round even
     number
   - I also tried 0,1, which my code reads as inside the circle just to
     confirm the \<= was working as intended.
+  - For these values stat(x, y) returns 4, based on the equation above
+    in the background section. Since the area of a quarter circle is
+    pi/4 we have to multiple by 4 in order to get areas.
 
 ### **q3** Estimate $\pi$
 
@@ -337,7 +342,7 @@ df_q3
     ## # A tibble: 1 × 1
     ##   pi_est
     ##    <dbl>
-    ## 1   3.15
+    ## 1   3.12
 
 Use the following to check that you’ve used the correct variable names.
 (NB. This does not check correctness.)
@@ -417,7 +422,7 @@ df_q4 %>%
 
 - What is a range of plausible values, based on the sampling
   distribution you’ve generated?
-  - Pi is likely somewhere between 3.1 and 3.15. Its almost definitely
+  - Pi is likely somewhere between 3.1 and 3.18. Its almost definitely
     more than 3 and less than 3.25. As I submit the assignment, I’m
     realizing the random values change every time I knit, but that range
     seems pretty inclusive.
@@ -447,7 +452,7 @@ df_q5
     ## # A tibble: 1 × 2
     ##   pi_lo pi_up
     ##   <dbl> <dbl>
-    ## 1  3.10  3.19
+    ## 1  3.08  3.17
 
 ### **q6** CLT confidence interval
 
@@ -488,7 +493,7 @@ df_q1 %>%
     ## # A tibble: 1 × 6
     ##    mean    sd     n     se pi_lo pi_up
     ##   <dbl> <dbl> <int>  <dbl> <dbl> <dbl>
-    ## 1  3.15  1.64  5000 0.0231  3.10  3.19
+    ## 1  3.12  1.65  5000 0.0234  3.08  3.17
 
 **Observations**:
 
